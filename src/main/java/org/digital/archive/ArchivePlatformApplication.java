@@ -1,8 +1,8 @@
 package org.digital.archive;
 
-import org.digital.archive.entities.Role;
-import org.digital.archive.entities.RoleType;
-import org.digital.archive.entities.User;
+import org.digital.archive.entities.*;
+import org.digital.archive.repositories.ProfessorRepository;
+import org.digital.archive.repositories.StudentRepository;
 import org.digital.archive.services.RoleService;
 import org.digital.archive.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,12 @@ public class ArchivePlatformApplication implements CommandLineRunner {
     private UserService userService;
 
     @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private ProfessorRepository professorRepository;
+
+    @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
@@ -35,24 +41,36 @@ public class ArchivePlatformApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
 
         // Create a new user
-        String hash = bCryptPasswordEncoder.encode("toortoor");
-//        User user = new User(null, "haytham", "haytham.dahri@gmail.com", hash, new Date(1997, 8, 26), null);
-//        user = this.userService.saveUser(user);
-//
-//        // Set roles to the current created user
-//        for( RoleType roleType : RoleType.values() ){
-//            Role role = new Role(null, roleType, roleType.name(), null);
-//            this.roleService.saveRole(role);
-//            user.addRole(role);
-//        }
-//        this.userService.saveUser(user);
-//        for( Role role : this.roleService.getRoles() ) {
-//            user.addRole(role);
-//            System.out.println(role.getRoleType().name());
-//        }
-//        this.userService.saveUser(user);
+       String hash = bCryptPasswordEncoder.encode("toortoor");
+       /* Student haytham = new Student("INFORMATIQUE", 2018L, null, Level.MASTER);
+        haytham.setPicture("/src/image.png");
+        haytham.setEmail("haytham.dahri@gmail.com");
+        haytham.setPassword(hash);
+        haytham.setBirthDate(new Date(1997, 8, 26));
+        haytham.setUsername("haythamdahri");
 
+        Professor housni = new Professor("INFORMATIQUE", 2006L, null);
+        housni.setPicture("/src/image.png");
+        housni.setEmail("khalid.housni@gmail.com");
+        housni.setPassword(hash);
+        housni.setBirthDate(new Date(1980, 4, 2));
+        housni.setUsername("khalidhousni");
 
+        haytham = this.studentRepository.save(haytham);
+        housni = this.professorRepository.save(housni);
+
+        // Set roles to the current created users
+        for( RoleType roleType : RoleType.values() ){
+            Role role = new Role(null, roleType, roleType.name(), null);
+            this.roleService.saveRole(role);
+            if( roleType == RoleType.ROLE_PROFESSOR ) {
+                housni.addRole(role);
+                housni = this.professorRepository.save(housni);
+            } else {
+                haytham.addRole(role);
+                haytham = this.studentRepository.save(haytham);
+            }
+        }*/
         System.out.println("Hash => " + hash);
     }
 }

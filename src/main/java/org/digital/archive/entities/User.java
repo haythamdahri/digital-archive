@@ -16,6 +16,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,7 +39,7 @@ public class User implements Serializable {
     @Column(name = "picture")
     @NotNull(message = "Image ne peut pas être null")
     @NotEmpty(message = "Image ne peut pas être vide")
-    @Size(min = 5, max = 8500, message = "Image non valide, veuillez ressayer avec un autre")
+    @Size(min = 5, max = 8500, message = "Image non valide, veuillez ressayer avec une autre")
     private String picture;
 
     // Email property

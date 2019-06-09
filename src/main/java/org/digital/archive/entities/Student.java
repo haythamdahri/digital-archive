@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.Collection;
+import java.util.Date;
 
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,19 +26,12 @@ public class Student extends User {
     private String department;
 
     @Column(name = "start_year", updatable = true, insertable = true)
-    @NotNull(message = "Année ne peut pas être null")
-    @NotEmpty(message = "Année ne peut pas être vide")
-    @Size(min = 5, max = 8, message = "Année non valide, veuillez ressayer avec un autre")
-    private int startYear;
+    private Long startYear;
 
     @Column(name = "finish_year", updatable = true, insertable = true)
-    @NotNull(message = "Année ne peut pas être null")
-    @NotEmpty(message = "Année ne peut pas être vide")
-    @Size(min = 5, max = 8, message = "Année non valide, veuillez ressayer avec un autre")
-    private int finishYear;
+    private Long finishYear;
 
     @Enumerated(EnumType.STRING)
     private Level level;
-
 
 }

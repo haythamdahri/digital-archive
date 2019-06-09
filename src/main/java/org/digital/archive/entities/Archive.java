@@ -23,6 +23,12 @@ public class Archive {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "content")
+    @NotNull(message = "Contenu ne peut pas être null")
+    @NotEmpty(message = "Contenu ne peut pas être vide")
+    @Size(min = 5, max = 800000, message = "Contenu non valide, veuillez ressayer avec un autre")
+    private String content;
+
     @Column(name = "year")
     @NotNull(message = "Année ne peut pas être null")
     @NotEmpty(message = "Année ne peut pas être vide")
@@ -35,6 +41,13 @@ public class Archive {
     @Size(min = 5, max = 8, message = "la date de publication non valide, veuillez ressayer avec un autre")
     @Temporal(TemporalType.TIMESTAMP)
     private Date publishDate;
+
+    // Picture property
+    @Column(name = "picture")
+    @NotNull(message = "Image ne peut pas être null")
+    @NotEmpty(message = "Image ne peut pas être vide")
+    @Size(min = 5, max = 8500, message = "Image non valide, veuillez ressayer avec un autre")
+    private String picture;
 
     // Prevent student's delete when deleting an archive
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
