@@ -34,6 +34,13 @@ public class User implements Serializable {
     @Pattern(regexp = "[a-zA-Z]{2,18}", message = "Format du nom d'utilisateur non valide!")
     private String username;
 
+    // Picture property
+    @Column(name = "picture")
+    @NotNull(message = "Image ne peut pas être null")
+    @NotEmpty(message = "Image ne peut pas être vide")
+    @Size(min = 5, max = 8500, message = "Image non valide, veuillez ressayer avec un autre")
+    private String picture;
+
     // Email property
     // User identifier
     @Id
@@ -48,7 +55,7 @@ public class User implements Serializable {
     @Column(name = "password")
     @NotNull(message = "Mot de passe ne peut pas être null")
     @NotEmpty(message = "Mot de passe ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Mot de passe invalide, veuillez ressayer avec un autre")
+    @Size(min = 5, max = 255, message = "Mot de passe non valide, veuillez ressayer avec un autre")
     private String password;
 
     // Birthdate property
