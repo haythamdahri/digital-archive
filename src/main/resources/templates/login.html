@@ -14,44 +14,165 @@
 <!-- @Navbar section -->
 <th:block th:replace="~{/layouts/navbar :: navbar}"/>
 
+<style>
+
+    :root {
+        --input-padding-x: 1.5rem;
+        --input-padding-y: 0.75rem;
+    }
+
+    .login,
+    .image {
+        min-height: 100vh;
+    }
+
+    .bg-image {
+        background-image: url('https://source.unsplash.com/WEQbe2jBg40/600x1200');
+        background-size: cover;
+        background-position: center;
+    }
+
+    .login-heading {
+        font-weight: 300;
+    }
+
+    .btn-login {
+        font-size: 0.9rem;
+        letter-spacing: 0.05rem;
+        padding: 0.75rem 1rem;
+        border-radius: 2rem;
+    }
+
+    .form-label-group {
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+    .form-label-group > input,
+    .form-label-group > label {
+        padding: var(--input-padding-y) var(--input-padding-x);
+        height: auto;
+        border-radius: 2rem;
+    }
+
+    .form-label-group > label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 100%;
+        margin-bottom: 0;
+        /* Override default `<label>` margin */
+        line-height: 1.5;
+        color: #495057;
+        cursor: text;
+        /* Match the input under the label */
+        border: 1px solid transparent;
+        border-radius: .25rem;
+        transition: all .1s ease-in-out;
+    }
+
+    .form-label-group input::-webkit-input-placeholder {
+        color: transparent;
+    }
+
+    .form-label-group input:-ms-input-placeholder {
+        color: transparent;
+    }
+
+    .form-label-group input::-ms-input-placeholder {
+        color: transparent;
+    }
+
+    .form-label-group input::-moz-placeholder {
+        color: transparent;
+    }
+
+    .form-label-group input::placeholder {
+        color: transparent;
+    }
+
+    .form-label-group input:not(:placeholder-shown) {
+        padding-top: calc(var(--input-padding-y) + var(--input-padding-y) * (2 / 3));
+        padding-bottom: calc(var(--input-padding-y) / 3);
+    }
+
+    .form-label-group input:not(:placeholder-shown) ~ label {
+        padding-top: calc(var(--input-padding-y) / 3);
+        padding-bottom: calc(var(--input-padding-y) / 3);
+        font-size: 12px;
+        color: #777;
+    }
+
+    /* Fallback for Edge
+    -------------------------------------------------- */
+
+    @supports (-ms-ime-align: auto) {
+        .form-label-group > label {
+            display: none;
+        }
+
+        .form-label-group input::-ms-input-placeholder {
+            color: #777;
+        }
+    }
+
+    /* Fallback for IE
+    -------------------------------------------------- */
+
+    @media all and (-ms-high-contrast: none),
+    (-ms-high-contrast: active) {
+        .form-label-group > label {
+            display: none;
+        }
+
+        .form-label-group input:-ms-input-placeholder {
+            color: #777;
+        }
+    }
+
+</style>
 
 <!-- @Content section -->
 <div class="container-fluid">
+    <div class="row no-gutter">
+        <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+        <div class="col-md-8 col-lg-6">
+            <div class="login d-flex align-items-center py-5">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-9 col-lg-8 mx-auto">
+                            <h3 class="login-heading mb-4"><i class="far fa-user-circle"></i> Authentification</h3>
 
-    <div class="col-12 col-sm-12 sol-md-8 col-lg-8 col-xl-8 ml-auto mr-auto mt-5">
-        <div class="card">
-            <div class="card-header">
-                <i class="fab fa-connectdevelop"></i> Connexion utilisateur
-            </div>
-            <div class="card-body">
-                <blockquote class="blockquote mb-0">
-                    <p>
+                            <!-- @Messages section -->
+                            <th:block th:replace="~{/layouts/messages :: messages}"/>
 
-                        <!-- @Messages section -->
-                        <th:block th:replace="~{/layouts/messages :: messages}"/>
+                            <form method="POST" th:action="@{/authenticate}">
+                                <div class="form-label-group">
+                                    <input type="email" id="inputEmail" class="form-control" name="username"
+                                           placeholder="Adresse email" required autofocus>
+                                    <label for="inputEmail">Email</label>
+                                </div>
 
-                    <form th:method="post" th:action="@{/authenticate}">
-                        <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" name="username" class="form-control" placeholder="Adresse email">
+                                <div class="form-label-group">
+                                    <input type="password" name="password" id="inputPassword" class="form-control"
+                                           placeholder="Mot de passe" required>
+                                    <label for="inputPassword">Mot de passe</label>
+                                </div>
+
+                                <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2"
+                                        type="submit"><i class="fas fa-sign-in-alt"></i> Se connecter
+                                </button>
+                                <div class="text-center">
+                                    <a class="small" href="#">Mot de passe oublié?</a>
+                                </div>
+                            </form>
                         </div>
-                        <div class="form-group">
-                            <label>Mot de passe</label>
-                            <input type="password" name="password" class="form-control" placeholder="Mot de passe">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-paper-plane"></i> Se
-                            connecter
-                        </button>
-                    </form>
-                    </p>
-                    <footer class="blockquote-footer">Veuillez saisir vos données <cite title="Source Title">d'authentification</cite>
-                    </footer>
-                </blockquote>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-
 </div>
 
 

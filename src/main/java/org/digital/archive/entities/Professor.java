@@ -7,13 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collection;
-import java.util.Date;
 
 @Entity
 @Data
+@DiscriminatorValue(value = "PROFESSOR")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Professor extends User {
@@ -30,6 +29,8 @@ public class Professor extends User {
     private Long startYear;
 
     // Archives where the professor is a jury
+    // Fetch all professor archives when retrieving the current one
+    // Cannot apply EAGER on two properties of the same class
     @ManyToMany(mappedBy = "professors")
     private Collection<Archive> archives;
 

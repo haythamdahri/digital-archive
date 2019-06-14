@@ -10,13 +10,161 @@
 </head>
 <!-- @Body section -->
 <body>
-
 <!-- @Navbar section -->
 <th:block th:replace="~{/layouts/navbar :: navbar}"/>
 
 
 <!-- @Content section -->
-<th:block th:replace="~{common/messages :: messages}"></th:block>
+<div class="container-fluid">
+    <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto"
+         th:insert="~{/layouts/messages :: messages}"></div>
+
+    <div class="row m-y-2">
+
+        <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 text-center ml-auto mr-auto">
+            <img src="//placehold.it/150" class="m-x-auto img-fluid img-circle" alt="avatar">
+            <h6 class="m-t-2">Chosir une image</h6>
+            <label class="custom-file">
+                <input type="file" id="file" class="custom-file-input">
+                <span class="custom-file-control">Chosir une image</span>
+            </label>
+        </div>
+
+
+        <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto">
+
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                       aria-controls="home" aria-selected="true">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                       aria-controls="profile" aria-selected="false"><i class="fas fa-id-badge"></i> Profil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
+                       aria-controls="contact" aria-selected="false">Contact</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+
+
+                </div>
+
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+
+                    <h5 class="display-4 text-center mt-2" th:text="${user.fullName}"></h5>
+
+                    <table class="table table-responsive-sm table-hover">
+                        <thead class="thead-light ">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col" th:text="${user.id}"></th>
+                            <th class="text-center">
+                                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal"
+                                        data-target="#profile-modal">
+                                    <i class="fas fa-user-edit"></i> Modifier
+                                </button>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">Nom</th>
+                            <td th:text="${user.lastName}" colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Prénom</th>
+                            <td th:text="${user.firstName}" colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Email</th>
+                            <td th:text="${user.email}" colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Photo</th>
+                            <td colspan="2">
+                                <img th:src="${'/uploads/images/' + user.picture}" height="30" width="30" class="rounded mx-auto d-block" alt="...">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Date de naissance</th>
+                            <td th:text="${user.birthDate}" colspan="2"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Roles</th>
+                            <td colspan="2">
+                                <th:block th:each="role : ${user.roles}">
+                                    <a href="javascript:void(0)" class="badge badge-secondary"
+                                       th:text="${role.role.name()}"></a>
+                                </th:block>
+                            </td>
+                        </tr>
+
+                        <!-- Professor display -->
+                        <th:block th:if="${professor != null}">
+                            <tr>
+                                <th scope="row">Département</th>
+                                <td th:text="${professor.department}" colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Année de début</th>
+                                <td th:text="${professor.startYear}" colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Nombre de partcipations au archives</th>
+                                <td colspan="2">
+                                    <button type="button" class="btn btn-primary">
+                                        Archives <span class="badge badge-light" th:text="${#lists.size(professor.archives)}"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </th:block>
+                        <!-- End Professor display -->
+                        <!-- Student display -->
+                        <th:block th:if="${student != null}">
+                            <tr>
+                                <th scope="row">Département</th>
+                                <td th:text="${student.department}" colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Année de début</th>
+                                <td th:text="${student.startYear}" colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Année de commencement</th>
+                                <td th:text="${student.finishYear != null ? student.finishYear : 'En cours'}" colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Niveau</th>
+                                <td th:text="${student.level}" colspan="2"></td>
+                            </tr>
+                        </th:block>
+                        <!-- End Student display -->
+
+
+                        </tbody>
+                    </table>
+
+
+                </div>
+
+                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<!-- @Modals -->
+<div th:replace="~{/modals/modal-form :: #profile-modal}"/>
 
 <!-- @Javascript include section -->
 <div th:replace="~{/layouts/js :: javascript}"></div>

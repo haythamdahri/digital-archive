@@ -12,7 +12,7 @@ import java.util.Collection;
 @RepositoryRestResource
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    public User findUserByEmail(@Param("email") String email);
+    public User findByEmail(@Param("email") String email);
 
     public Collection<User> findByUsername(@Param("username") String username);
 

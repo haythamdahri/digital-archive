@@ -23,7 +23,7 @@ public class Role implements Serializable {
     // Role identifier
     @Id
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", unique = true)
+    @Column(name = "role_name", unique = true)
     private RoleType role;
 
     @Column(name = "description", length = 5000, columnDefinition = "TEXT", updatable = true, insertable = true)

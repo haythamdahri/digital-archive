@@ -13,7 +13,7 @@ import java.util.Collection;
 @RepositoryRestResource
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
-    public User findStudentByEmail(@Param("email") String email);
+    public Student findByEmail(@Param("email") String email);
 
     public Collection<User> findByUsername(@Param("username") String username);
 

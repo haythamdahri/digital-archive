@@ -17,11 +17,10 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
-@EnableAutoConfiguration
 /*
  * @EnableGlobalMethodSecurity(securedEnabled = true) is used to protect any method with @Secured which we add to specify authorized users based on there roles
  */
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 // Order(1) means the main authentication is this,
 // Order(2) will not handle anything because the traffic will be hold here and never rich the second one.
 @Order(1)

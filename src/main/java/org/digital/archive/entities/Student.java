@@ -14,6 +14,7 @@ import java.util.Date;
 
 @Entity
 @Data
+@DiscriminatorValue(value = "STUDENT")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Student extends User {

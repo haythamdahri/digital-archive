@@ -15,14 +15,16 @@ import java.util.Collection;
 import java.util.Date;
 
 @Entity
-@Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Table(name = "users")
+@DiscriminatorColumn(name = "userType")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class User implements Serializable {
 
 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
@@ -31,9 +33,23 @@ public class User implements Serializable {
     @Column(name = "username", unique = true, updatable = true, insertable = true)
     @NotNull(message = "Nom d'utilisateur ne peut pas être null")
     @NotEmpty(message = "Nom d'utilisateur ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Nom d'utilisateur, veuillez ressayer avec un autre")
+    @Size(min = 5, max = 255, message = "Nom d'utilisateur non valide, veuillez ressayer avec un autre")
     @Pattern(regexp = "[a-zA-Z]{2,18}", message = "Format du nom d'utilisateur non valide!")
     private String username;
+
+    // First name property
+    @Column(name = "first_name", updatable = true, insertable = true)
+    @NotNull(message = "Prénom ne peut pas être null")
+    @NotEmpty(message = "Prénom ne peut pas être vide")
+    @Size(min = 5, max = 255, message = "Prénom non valide, veuillez ressayer avec un autre")
+    private String firstName;
+
+    // Username property
+    @Column(name = "last_name", updatable = true, insertable = true)
+    @NotNull(message = "Nom ne peut pas être null")
+    @NotEmpty(message = "Nom ne peut pas être vide")
+    @Size(min = 5, max = 255, message = "Nom non valide, veuillez ressayer avec un autre")
+    private String lastName;
 
     // Picture property
     @Column(name = "picture")
@@ -44,7 +60,6 @@ public class User implements Serializable {
 
     // Email property
     // User identifier
-    @Id
     @Column(name = "email", unique = true, updatable = true, insertable = true)
     @NotNull(message = "Adresse email ne peut pas être null")
     @NotEmpty(message = "Adresse email ne peut pas être vide")
@@ -72,13 +87,20 @@ public class User implements Serializable {
     private Collection<Role> roles;
 
     /*
-    * Custom class constructor
-    */
+     * Custom class constructor
+     */
     public User(String username, String email, String password, Date birthDate) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.birthDate = birthDate;
+    }
+
+    /*
+     * User full name
+     */
+    public String getFullName() {
+        return this.firstName + " " + this.lastName;
     }
 
     /*
