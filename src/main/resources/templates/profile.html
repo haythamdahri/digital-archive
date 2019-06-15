@@ -22,11 +22,13 @@
     <div class="row m-y-2">
 
         <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 text-center ml-auto mr-auto">
-            <img src="//placehold.it/150" class="m-x-auto img-fluid img-circle" alt="avatar">
-            <h6 class="m-t-2">Chosir une image</h6>
-            <label class="custom-file">
-                <input type="file" id="file" class="custom-file-input">
-                <span class="custom-file-control">Chosir une image</span>
+            <img src="//placehold.it/150" class="m-x-auto rounded-circle" alt="avatar">
+            <h6 class="mt-4" th:text="${user.fullName}"></h6>
+            <label class="custom-file w-50 ml-auto mr-auto">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile">
+                    <label class="custom-file-label" for="customFile"></label>
+                </div>
             </label>
         </div>
 
@@ -35,26 +37,31 @@
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                    <a class="nav-link"
+                       th:classappend="${ (param.tab == null || not #strings.equalsIgnoreCase(param.tab, 'profile')) && profileTab == null ? 'active' : '' }"
+                       id="home-tab" data-toggle="tab" href="#home" role="tab"
                        aria-controls="home" aria-selected="true">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                    <a class="nav-link"
+                       th:classappend="${ (param.tab != null && #strings.equalsIgnoreCase(param.tab, 'profile')) || profileTab != null ? 'active' : '' }"
+                       id="profile-tab" data-toggle="tab" href="#profile" role="tab"
                        aria-controls="profile" aria-selected="false"><i class="fas fa-id-badge"></i> Profil</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab"
-                       aria-controls="contact" aria-selected="false">Contact</a>
-                </li>
             </ul>
+
             <div class="tab-content" id="myTabContent">
 
-                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="tab-pane fade"
+                     th:classappend="${ (param.tab == null || not #strings.equalsIgnoreCase(param.tab, 'profile')) || #strings.equalsIgnoreCase(param.tab, 'home') && (profileTab == null) ? 'show active' : '' }"
+                     id="home" role="tabpanel" aria-labelledby="home-tab">
 
 
                 </div>
 
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="tab-pane fade"
+                     th:classappend="${ (param.tab != null && #strings.equalsIgnoreCase(param.tab, 'profile')) || profileTab != null  ? 'show active' : '' }"
+                     id="profile" role="tabpanel" aria-labelledby="profile-tab">
 
                     <h5 class="display-4 text-center mt-2" th:text="${user.fullName}"></h5>
 
@@ -73,6 +80,10 @@
                         </thead>
                         <tbody>
                         <tr>
+                            <th scope="row">Nom d'utilisateur</th>
+                            <td th:text="${user.username}" colspan="2"></td>
+                        </tr>
+                        <tr>
                             <th scope="row">Nom</th>
                             <td th:text="${user.lastName}" colspan="2"></td>
                         </tr>
@@ -87,7 +98,8 @@
                         <tr>
                             <th scope="row">Photo</th>
                             <td colspan="2">
-                                <img th:src="${'/uploads/images/' + user.picture}" height="30" width="30" class="rounded mx-auto d-block" alt="...">
+                                <img th:src="${'/uploads/images/' + user.picture}" height="30" width="30"
+                                     class="rounded float-left" alt="...">
                             </td>
                         </tr>
                         <tr>
@@ -99,7 +111,7 @@
                             <td colspan="2">
                                 <th:block th:each="role : ${user.roles}">
                                     <a href="javascript:void(0)" class="badge badge-secondary"
-                                       th:text="${role.role.name()}"></a>
+                                       th:text="${roles.get(role.role)}"></a>
                                 </th:block>
                             </td>
                         </tr>
@@ -118,7 +130,8 @@
                                 <th scope="row">Nombre de partcipations au archives</th>
                                 <td colspan="2">
                                     <button type="button" class="btn btn-primary">
-                                        Archives <span class="badge badge-light" th:text="${#lists.size(professor.archives)}"></span>
+                                        Archives <span class="badge badge-light"
+                                                       th:text="${#lists.size(professor.archives)}"></span>
                                     </button>
                                 </td>
                             </tr>
@@ -135,8 +148,9 @@
                                 <td th:text="${student.startYear}" colspan="2"></td>
                             </tr>
                             <tr>
-                                <th scope="row">Année de commencement</th>
-                                <td th:text="${student.finishYear != null ? student.finishYear : 'En cours'}" colspan="2"></td>
+                                <th scope="row">Année de fin</th>
+                                <td th:text="${student.finishYear != null ? student.finishYear : 'En cours'}"
+                                    colspan="2"></td>
                             </tr>
                             <tr>
                                 <th scope="row">Niveau</th>
@@ -152,8 +166,6 @@
 
                 </div>
 
-                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
-
             </div>
 
         </div>
@@ -164,10 +176,22 @@
 </div>
 
 <!-- @Modals -->
-<div th:replace="~{/modals/modal-form :: #profile-modal}"/>
+<div th:replace="~{/modals/user-modal-form :: user-form}"/>
+
 
 <!-- @Javascript include section -->
 <div th:replace="~{/layouts/js :: javascript}"></div>
+
+
+<!-- Auto open modal for error display -->
+<th:block th:if="${openUserModal != null}">
+    <script>
+        $(document).ready(() => {
+            $("#profile-modal").modal("show");
+        });
+    </script>
+
+</th:block>
 
 </body>
 </html>

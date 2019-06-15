@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+
+<!-- Extra large modal -->
+<div class="modal fade" id="profile-modal" th:fragment="user-form" tabindex="-1" role="dialog"
+     aria-labelledby="myExtraLargeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-info-circle"></i> Information du profil
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="user-form" th:action="@{/profile}" th:object="${userModal}">
+
+                    <!-- Id -->
+                    <input th:field="*{id}" type="hidden"/>
+
+                    <!-- Last name -->
+                    <div class="form-group">
+                        <label for="last-name" class="col-form-label">Nom:</label>
+                        <input th:field="*{lastName}" type="text" class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('lastName') ? 'is-invalid' : ''}" id="last-name"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                             th:errors="*{lastName}">lastName
+                            Error
+                        </div>
+                    </div>
+
+                    <!-- Last name -->
+                    <div class="form-group">
+                        <label for="first-name" class="col-form-label">Prénom:</label>
+                        <input th:field="*{firstName}" type="text" class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('firstName') ? 'is-invalid' : ''}" id="first-name"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}"
+                             th:errors="*{firstName}">firstName Error
+                        </div>
+                    </div>
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label for="username" class="col-form-label">Nom d'utilisateur:</label>
+                        <input th:field="*{username}" type="text" class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('username') ? 'is-invalid' : ''}" id="username"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}"
+                             th:errors="*{username}">username Error
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">Email:</label>
+                        <input th:field="*{email}" type="email" class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('email') ? 'is-invalid' : ''}" id="email"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}">email Error
+                        </div>
+                    </div>
+
+                    <!-- Date de naissance -->
+                    <div class="form-group">
+                        <label for="birth-date" class="col-form-label">Date de naissance:</label>
+                        <input th:field="*{birthDate}" type="text" class="form-control form-control-sm datepicker"
+                               pattern="yyyy-mm-dd" data-date-format="yyyy-mm-dd" placeholder="AAAA/MM/JJ"
+                               th:classappend="${#fields.hasErrors('birthDate') ? 'is-invalid' : ''}" id="birth-date"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}"
+                             th:errors="*{birthDate}">birthDate Error
+                        </div>
+                    </div>
+
+                    <!-- Picture -->
+                    <input th:field="*{picture}" type="hidden" />
+
+                    <!-- Password hidden field -->
+                    <input type="hidden" th:field="*{password}" />
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><i
+                        class="far fa-window-close"></i>
+                    Fermer
+                </button>
+                <button type="button" onclick="document.getElementById('user-form').submit();"
+                        class="btn btn-primary btn-sm">
+                    <i class="far fa-save"></i> Sauvegarder
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

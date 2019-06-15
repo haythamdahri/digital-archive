@@ -3,6 +3,7 @@ package org.digital.archive.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -23,7 +24,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class User implements Serializable {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -31,52 +31,53 @@ public class User implements Serializable {
 
     // Username property
     @Column(name = "username", unique = true, updatable = true, insertable = true)
-    @NotNull(message = "Nom d'utilisateur ne peut pas être null")
-    @NotEmpty(message = "Nom d'utilisateur ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Nom d'utilisateur non valide, veuillez ressayer avec un autre")
-    @Pattern(regexp = "[a-zA-Z]{2,18}", message = "Format du nom d'utilisateur non valide!")
+    @NotNull(message = "Nom utilisateur ne peut pas être null!")
+    @NotEmpty(message = "Nom utilisateur ne peut pas être vide!")
+    @Size(min = 5, max = 255, message = "Nom utilisateur non valide, veuillez ressayer avec un autre!")
+    @Pattern(regexp = "[a-zA-Z]{2,18}", message = "Format du nom utilisateur non valide!")
     private String username;
 
     // First name property
     @Column(name = "first_name", updatable = true, insertable = true)
-    @NotNull(message = "Prénom ne peut pas être null")
-    @NotEmpty(message = "Prénom ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Prénom non valide, veuillez ressayer avec un autre")
+    @NotNull(message = "Prénom ne peut pas être null!")
+    @NotEmpty(message = "Prénom ne peut pas être vide!")
+    @Size(min = 5, max = 255, message = "Prénom non valide, veuillez ressayer avec un autre!")
     private String firstName;
 
     // Username property
     @Column(name = "last_name", updatable = true, insertable = true)
-    @NotNull(message = "Nom ne peut pas être null")
-    @NotEmpty(message = "Nom ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Nom non valide, veuillez ressayer avec un autre")
+    @NotNull(message = "Nom ne peut pas être null!")
+    @NotEmpty(message = "Nom ne peut pas être vide!")
+    @Size(min = 5, max = 255, message = "Nom non valide, veuillez ressayer avec un autre!")
     private String lastName;
 
     // Picture property
     @Column(name = "picture")
-    @NotNull(message = "Image ne peut pas être null")
-    @NotEmpty(message = "Image ne peut pas être vide")
-    @Size(min = 5, max = 8500, message = "Image non valide, veuillez ressayer avec une autre")
+    @NotNull(message = "Image ne peut pas être null!")
+    @NotEmpty(message = "Image ne peut pas être vide!")
+    @Size(min = 5, max = 8500, message = "Image non valide, veuillez ressayer avec une autre!")
     private String picture;
 
     // Email property
     // User identifier
     @Column(name = "email", unique = true, updatable = true, insertable = true)
-    @NotNull(message = "Adresse email ne peut pas être null")
-    @NotEmpty(message = "Adresse email ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Adresse email est non valide, veuillez ressayer avec un autre")
-    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Format d'adresse email non valide!")
+    @NotNull(message = "Adresse email ne peut pas être null!")
+    @NotEmpty(message = "Adresse email ne peut pas être vide!")
+    @Size(min = 5, max = 255, message = "Adresse email est non valide, veuillez ressayer avec un autre!")
+    @Pattern(regexp = "^[a-zA-Z0-9_!#$%&’*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$", message = "Format adresse email non valide!")
     private String email;
 
     // Password property
     @Column(name = "password")
-    @NotNull(message = "Mot de passe ne peut pas être null")
-    @NotEmpty(message = "Mot de passe ne peut pas être vide")
-    @Size(min = 5, max = 255, message = "Mot de passe non valide, veuillez ressayer avec un autre")
+    @NotNull(message = "Mot de passe ne peut pas être null!")
+    @NotEmpty(message = "Mot de passe ne peut pas être vide!")
+    @Size(min = 5, max = 255, message = "Mot de passe non valide, veuillez ressayer avec un autre!")
     private String password;
 
     // Birthdate property
     @Column(name = "birth_date")
     @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthDate;
 
     // Bi-directional relationship
