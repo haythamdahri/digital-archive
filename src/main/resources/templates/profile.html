@@ -147,11 +147,16 @@
 
                                         <!-- Image -->
                                         <div class="custom-file overflow-hidden rounded-pill">
-                                            <input id="profile-picture" type="file" name="picture"
+                                          <!--  <input id="profile-picture" type="file" name="picture"
                                                    onchange="form.submit();"
                                                    class="custom-file-input rounded-pill">
                                             <label for="profile-picture" class="custom-file-label rounded-pill">Choisir
-                                                une image</label>
+                                                une image</label>-->
+
+                                            <input type="button" class="btn btn-secondary" id="btnChangePicture"
+                                                   value="Changer"/>
+                                            <input type="file" name="image" style="display: none;" id="profilePicture" />
+
                                         </div>
                                     </form>
                                     <!-- End -->
