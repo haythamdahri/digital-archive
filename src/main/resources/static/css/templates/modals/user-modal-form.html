@@ -67,7 +67,7 @@
                     <div class="form-group">
                         <label for="birth-date" class="col-form-label">Date de naissance:</label>
                         <input th:field="*{birthDate}" type="text" class="form-control form-control-sm datepicker"
-                               pattern="yyyy-mm-dd" data-date-format="yyyy-mm-dd" placeholder="AAAA/MM/JJ"
+                               pattern="yyyy-mm-dd" placeholder="AAAA/MM/JJ"
                                th:classappend="${#fields.hasErrors('birthDate') ? 'is-invalid' : ''}" id="birth-date"/>
                         <div class="invalid-feedback" th:if="${#fields.hasErrors('birthDate')}"
                              th:errors="*{birthDate}">birthDate Error

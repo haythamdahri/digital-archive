@@ -4,10 +4,11 @@ import org.digital.archive.entities.Professor;
 import org.digital.archive.entities.RoleType;
 import org.digital.archive.entities.Student;
 import org.digital.archive.entities.User;
-import org.digital.archive.repositories.UserRepository;
 import org.digital.archive.services.ProfessorService;
 import org.digital.archive.services.StudentService;
 import org.digital.archive.services.UserService;
+import org.digital.archive.utils.ArchiveHelper;
+import org.digital.archive.utils.SecurityConstants;
 import org.digital.archive.utils.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,13 +16,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -32,6 +37,9 @@ public class MainController {
     private SecurityHelper securityHelper;
 
     @Autowired
+    private ArchiveHelper archiveHelper;
+
+    @Autowired
     private StudentService studentService;
 
     @Autowired
@@ -39,9 +47,6 @@ public class MainController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private Map<RoleType, String> rolesMap;
@@ -170,6 +175,46 @@ public class MainController {
         }
         return "redirect:/profile?tab=profile";
     }
+
+    /*
+     * @Profile picture update controller (POST REQUESTS)
+     */
+    @PostMapping("/profile/update-picture")
+    public String updateProfilepicture(@RequestParam("picture") MultipartFile file, Model model, RedirectAttributes redirectAttributes) {
+        try {
+
+            // Check picture file validity before processing
+            if (file.isEmpty() || !SecurityConstants.imageContentTypes.contains(file.getContentType())) {
+                redirectAttributes.addFlashAttribute("error", "L'image sélectionnée n'est pas valide!");
+                return "redirect:/profile";
+            }
+
+            // Retrieve connected user
+            User user = this.securityHelper.getConnectedUser();
+
+            // Change the image name based on the unique user id
+            user.setPicture(user.getId() + "." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+
+            // Save the user on the database
+            user = this.userService.saveUser(user);
+
+            // Upload user image or update it if exists
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(SecurityConstants.usersPicturesUploadDirectory + user.getPicture());
+            System.out.println(Files.exists(path));
+            Files.write(path, bytes);
+
+            // Redirect the user to his profile with a success message
+            redirectAttributes.addFlashAttribute("success", "L'image de votre profil à été changée avec succés");
+            return "redirect:/profile";
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Une erreure est survenue, veuillez ressayer!");
+            return "redirect:/profile";
+        }
+    }
+
 
 
 }

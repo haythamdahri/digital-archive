@@ -6,44 +6,120 @@
 
     <!-- @Title part -->
     <title id="pageTitle">Acceuil</title>
-
 </head>
 <!-- @Body section -->
 <body>
+
+
+<style>
+    /*
+    *
+    * ==========================================
+    * CUSTOM UTIL CLASSES
+    * ==========================================
+    *
+    */
+
+    .file-upload input[type='file'] {
+        display: none;
+    }
+
+    .rounded-lg {
+        border-radius: 1rem;
+    }
+
+    .custom-file-label.rounded-pill {
+        border-radius: 50rem;
+    }
+
+    .custom-file-label.rounded-pill::after {
+        border-radius: 0 50rem 50rem 0;
+    }
+
+    /* With arrow tabs */
+
+    .with-arrow .nav-link.active {
+        position: relative;
+    }
+
+    .with-arrow .nav-link.active::after {
+        content: '';
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #2b90d9;
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: block;
+    }
+
+    /* lined tabs */
+
+    .lined .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .lined .nav-link:hover {
+        border: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .lined .nav-link.active {
+        background: none;
+        color: #555;
+        border-color: #2b90d9;
+    }
+
+
+    .nav-item .nav-link {
+        color: #555;
+    }
+
+    .text-uppercase {
+        letter-spacing: 0.1em;
+    }
+</style>
+
+
 <!-- @Navbar section -->
 <th:block th:replace="~{/layouts/navbar :: navbar}"/>
 
 
 <!-- @Content section -->
 <div class="container-fluid">
-    <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto"
-         th:insert="~{/layouts/messages :: messages}"></div>
 
-    <div class="row m-y-2">
+    <div class="row m-y-2 mt-2">
 
-        <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 text-center ml-auto mr-auto">
-            <img src="//placehold.it/150" class="m-x-auto rounded-circle" alt="avatar">
-            <h6 class="mt-4" th:text="${user.fullName}"></h6>
-            <label class="custom-file w-50 ml-auto mr-auto">
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="customFile">
-                    <label class="custom-file-label" for="customFile"></label>
-                </div>
-            </label>
+
+        <!-- Picture section -->
+        <div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 text-center ml-auto mr-auto">
+            <a th:data-fancybox="${user.fullName}" th:href="${'/uploads/users/images/' + user.picture }">
+                <img th:src="${'/uploads/users/images/' + user.picture }" height="150" width="150"
+                     class="m-x-auto rounded-circle" alt="avatar">
+            </a>
+            <h4 class="mt-4" th:text="${user.fullName}"></h4>
         </div>
+        <!-- End picture section -->
+
+        <!-- Profile infos section -->
+        <div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 ml-auto mr-auto">
 
 
-        <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto">
+            <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto"
+                 th:insert="~{/layouts/messages :: messages}"></div>
 
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link"
+            <ul class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center" id="myTab"
+                role="tablist">
+                <li class="nav-item flex-sm-fill">
+                    <a class="nav-link text-uppercase"
                        th:classappend="${ (param.tab == null || not #strings.equalsIgnoreCase(param.tab, 'profile')) && profileTab == null ? 'active' : '' }"
                        id="home-tab" data-toggle="tab" href="#home" role="tab"
-                       aria-controls="home" aria-selected="true">Home</a>
+                       aria-controls="home" aria-selected="true"><i class="far fa-compass"></i> Activités</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link"
+                <li class="nav-item flex-sm-fill">
+                    <a class="nav-link text-uppercase"
                        th:classappend="${ (param.tab != null && #strings.equalsIgnoreCase(param.tab, 'profile')) || profileTab != null ? 'active' : '' }"
                        id="profile-tab" data-toggle="tab" href="#profile" role="tab"
                        aria-controls="profile" aria-selected="false"><i class="fas fa-id-badge"></i> Profil</a>
@@ -56,6 +132,34 @@
                      th:classappend="${ (param.tab == null || not #strings.equalsIgnoreCase(param.tab, 'profile')) || #strings.equalsIgnoreCase(param.tab, 'home') && (profileTab == null) ? 'show active' : '' }"
                      id="home" role="tabpanel" aria-labelledby="home-tab">
 
+                    <section>
+                        <div class="row">
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
+                                <div class="p-5 bg-white shadow rounded-lg"><img
+                                        th:src="@{/images/upload.png}"
+                                        alt="" width="200" class="d-block mx-auto rounded-pill">
+
+                                    <form method="POST" th:action="@{/profile/update-picture}"
+                                          enctype="multipart/form-data">
+
+                                        <!-- User id -->
+                                        <input type="hidden" name="id" th:value="${user.id}"/>
+
+                                        <!-- Image -->
+                                        <div class="custom-file overflow-hidden rounded-pill">
+                                            <input id="profile-picture" type="file" name="picture"
+                                                   onchange="form.submit();"
+                                                   class="custom-file-input rounded-pill">
+                                            <label for="profile-picture" class="custom-file-label rounded-pill">Choisir
+                                                une image</label>
+                                        </div>
+                                    </form>
+                                    <!-- End -->
+
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
                 </div>
 
