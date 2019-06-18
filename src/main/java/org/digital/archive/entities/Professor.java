@@ -28,6 +28,9 @@ public class Professor extends User {
     @Column(name = "year", updatable = true, insertable = true)
     private Long startYear;
 
+    @Column(name = "finish_year", updatable = true, insertable = true)
+    private Long finishYear;
+
     // Archives where the professor is a jury
     // Fetch all professor archives when retrieving the current one
     // Cannot apply EAGER on two properties of the same class

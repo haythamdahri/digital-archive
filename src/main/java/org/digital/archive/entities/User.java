@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -77,7 +78,7 @@ public class User implements Serializable {
     // Birthdate property
     @Column(name = "birth_date")
     @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd", iso = DateTimeFormat.ISO.DATE)
     private Date birthDate;
 
     // Bi-directional relationship
@@ -86,6 +87,16 @@ public class User implements Serializable {
             joinColumns = @JoinColumn(name = "user_email"),
             inverseJoinColumns = @JoinColumn(name = "role_role"))
     private Collection<Role> roles;
+
+    /*
+    * User age
+    */
+    public Integer getAge() {
+        Instant instant = Instant.ofEpochMilli(this.birthDate.getTime());
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        LocalDate localDate = localDateTime.toLocalDate();
+        return Period.between(localDate, LocalDate.now()).getYears();
+    }
 
     /*
      * Custom class constructor
@@ -113,6 +124,7 @@ public class User implements Serializable {
         }
         this.roles.add(role);
     }
+
 
 
 }

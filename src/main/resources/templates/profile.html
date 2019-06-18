@@ -96,10 +96,36 @@
         <!-- Picture section -->
         <div class="col-12 col-sm-12 col-md-2 col-lg-2 col-xl-2 text-center ml-auto mr-auto">
             <a th:data-fancybox="${user.fullName}" th:href="${'/uploads/users/images/' + user.picture }">
-                <img th:src="${'/uploads/users/images/' + user.picture }" height="150" width="150"
+                <img th:src="${'/uploads/users/images/' + user.picture }" height="150" width="150" id="imgProfile"
                      class="m-x-auto rounded-circle" alt="avatar">
             </a>
             <h4 class="mt-4" th:text="${user.fullName}"></h4>
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Age: </strong>
+                    <th:block th:text="${user.age}"/>
+                    ans
+                </li>
+                <li class="list-group-item"><strong>Département: </strong>
+                    <th:block th:text="${student != null ? student.department : professor.department}"/>
+                </li>
+                <li class="list-group-item"><strong>Année de début: </strong>
+                    <th:block th:text="${student != null ? student.startYear : professor.startYear}"/>
+                </li>
+                <th:block th:if="${professor != null}">
+                    <li class="list-group-item"><strong>Année de fin:</strong>
+                        <th:block th:text="${professor.finishYear != null ? student.finishYear :
+                    'En cours'}"/>
+                    </li>
+                </th:block>
+                <th:block th:if="${student != null}">
+                    <li class="list-group-item"><strong>Année de fin:</strong>
+                        <th:block th:text="${student.finishYear != null ? student.finishYear :
+                    'En cours'}"/>
+                    </li>
+                </th:block>
+            </ul>
+
         </div>
         <!-- End picture section -->
 
@@ -107,14 +133,14 @@
         <div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 ml-auto mr-auto">
 
 
-            <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto"
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto"
                  th:insert="~{/layouts/messages :: messages}"></div>
 
             <ul class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center" id="myTab"
                 role="tablist">
                 <li class="nav-item flex-sm-fill">
                     <a class="nav-link text-uppercase"
-                       th:classappend="${ (param.tab == null || not #strings.equalsIgnoreCase(param.tab, 'profile')) && profileTab == null ? 'active' : '' }"
+                       th:classappend="${ (param.tab == null || !#strings.equalsIgnoreCase(param.tab, 'profile')) && profileTab == null ? 'active' : '' }"
                        id="home-tab" data-toggle="tab" href="#home" role="tab"
                        aria-controls="home" aria-selected="true"><i class="far fa-compass"></i> Activités</a>
                 </li>
@@ -129,7 +155,7 @@
             <div class="tab-content" id="myTabContent">
 
                 <div class="tab-pane fade"
-                     th:classappend="${ (param.tab == null || not #strings.equalsIgnoreCase(param.tab, 'profile')) || #strings.equalsIgnoreCase(param.tab, 'home') && (profileTab == null) ? 'show active' : '' }"
+                     th:classappend="${ ((param.tab == null || !#strings.equalsIgnoreCase(param.tab, 'profile')) || #strings.equalsIgnoreCase(param.tab, 'home')) && (profileTab == null) ? 'show active' : '' }"
                      id="home" role="tabpanel" aria-labelledby="home-tab">
 
                     <section>
@@ -147,19 +173,19 @@
 
                                         <!-- Image -->
                                         <div class="custom-file overflow-hidden rounded-pill">
-                                          <!--  <input id="profile-picture" type="file" name="picture"
+                                            <input id="profile-picture" type="file" name="picture"
                                                    onchange="form.submit();"
                                                    class="custom-file-input rounded-pill">
                                             <label for="profile-picture" class="custom-file-label rounded-pill">Choisir
-                                                une image</label>-->
-
-                                            <input type="button" class="btn btn-secondary" id="btnChangePicture"
-                                                   value="Changer"/>
-                                            <input type="file" name="image" style="display: none;" id="profilePicture" />
+                                                une image</label>
 
                                         </div>
                                     </form>
                                     <!-- End -->
+
+                                    <hr>
+
+                                    <a th:href="@{/archives/add}">Ajouter un archive</a>
 
                                 </div>
                             </div>
@@ -207,7 +233,7 @@
                         <tr>
                             <th scope="row">Photo</th>
                             <td colspan="2">
-                                <img th:src="${'/uploads/images/' + user.picture}" height="30" width="30"
+                                <img th:src="${'/uploads/users/images/' + user.picture}" height="30" width="30"
                                      class="rounded float-left" alt="...">
                             </td>
                         </tr>

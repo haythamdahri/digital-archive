@@ -25,9 +25,8 @@ import javax.validation.Valid;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("/")
@@ -89,6 +88,7 @@ public class MainController {
         Professor professor = this.professorService.getProfessor(user.getId());
         Student student = this.studentService.getStudent(user.getId());
 
+
         model.addAttribute("user", user);
         model.addAttribute("userModal", user);
         model.addAttribute("professor", professor);
@@ -148,6 +148,12 @@ public class MainController {
             model.addAttribute("openUserModal", true);
             return "profile";
         }
+
+        // Increment date by one day
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(user.getBirthDate());
+        cal.add(Calendar.DATE, 1); //minus number would decrement the days
+        user.setBirthDate(cal.getTime());
 
         // Save the user using the student or professor object
         if (student != null) {
@@ -215,6 +221,25 @@ public class MainController {
         }
     }
 
+    /*
+     *
+     */
+    @RequestMapping(value = "/archives/add", method = RequestMethod.GET)
+    public String profileGet(Model model) {
 
+        // Retrieve connected
+        User user = this.securityHelper.getConnectedUser();
+
+        // Retrieve professors and students
+        Collection<Professor> professors = this.professorService.getProfessors();
+        Collection<Student> students = this.studentService.getStudents();
+
+        model.addAttribute("user", user);
+        model.addAttribute("professors", professors);
+        model.addAttribute("students", students);
+
+        return "archive-form";
+
+    }
 
 }
