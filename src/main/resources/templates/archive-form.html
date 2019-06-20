@@ -13,6 +13,28 @@
 <!-- @Body section -->
 <body>
 
+<style>
+    .bd-callout {
+        margin-top: 1.25rem;
+        margin-bottom: 1.25rem;
+        padding: 1.25rem;
+        border-width: 1px 1px 1px 0.25rem;
+        border-style: solid;
+        border-color: rgb(238, 238, 238);
+        border-image: initial;
+        border-radius: 0.25rem;
+    }
+
+    .bd-callout-info {
+        border-left-color: rgb(91, 192, 222);
+    }
+
+    .bd-callout-primary {
+        border-left-color: rgb(0, 123, 255);;
+    }
+
+</style>
+
 <!-- @Navbar section -->
 <th:block th:replace="~{/layouts/navbar :: navbar}"/>
 
@@ -20,23 +42,119 @@
 <!-- @Content section -->
 <div class="container">
 
-    <div class="row m-y-2 mt-2">
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center ml-auto mr-auto">
+    <div class="row m-y-2 mt-2 shadow p-3 mb-5 bg-white rounded">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto">
 
-            <h1 class="display-4">Display 4</h1>
+            <th:block th:if="${archive.id != null}">
+                <h1 class="display-4 mt-4 mb-4 text-center"
+                    th:utext="'Modification archive: ' + '<i class=\'fas fa-edit\'></i> ' + archive.title"></h1>
+            </th:block>
 
-            <form>
-                <div class="form-group">
-                    <label for="exampleFormControlInput1">Email address</label>
-                    <input type="email" class="form-control" id="exampleFormControlInput1"
-                           placeholder="name@example.com">
+            <th:block th:unless="${archive.id != null}">
+                <h1 class="display-4 mt-4 mb-4 text-center"
+                    th:utext="'<i class=\'fas fa-plus-circle\'></i> Ajout d\'un nouveau archive'"></h1>
+            </th:block>
+
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto"
+                 th:insert="~{/layouts/messages :: messages}"></div>
+
+            <div class="bd-callout bd-callout-info text-center row">
+                <h5 class="col-12">Article Universitaire</h5>
+                <p class="col-12">
+                    <code>Saisir les données <code>d'article</code></code>
+                </p>
+            </div>
+
+            <form th::object="${archive}" enctype="multipart/form-data" method="POST" th:action="'/archives/add'">
+
+                <div class="form-group bd-callout bd-callout-primary row">
+                    <label class="col-12">
+                        <p class="h5">Titre de l'article</p>
+                    </label>
+                    <input th:field="${archive.title}" class="form-control col-12" placeholder="Saisir le titre...">
                 </div>
-                <div class="form-group">
-                    <label for="editor">Example textarea</label>
-                    <textarea name="content" id="editor">
-                        &lt;p&gt;Here goes the initial content of the editor.&lt;/p&gt;
-                    </textarea>
+
+                <div class="form-group bd-callout bd-callout-primary row text-center">
+                    <label class="col-12">
+                        <p class="h5">Contenu de l'article</p>
+                    </label>
                 </div>
+                <textarea name="content" cols="80" th:field="${archive.content}" id="editor" />
+
+
+                <div class="form-group bd-callout bd-callout-primary row">
+                    <div class="col-sm-2 col-form-label">
+                        <p class="h5">Professeurs</p>
+                    </div>
+                    <th:block th:each="professor : ${professors}">
+                        <div class="col-auto my-1">
+                            <div class="custom-control custom-checkbox mr-sm-2">
+                                <input th:checked="${selectedProfessors != null && selectedProfessors.contains(professor.id.toString())}" name="professors" type="checkbox" class="custom-control-input" th:value="${professor.id}"
+                                       th:id="'professor' + ${professor.id}">
+                                <label class="custom-control-label" th:for="'professor' + ${professor.id}"
+                                       th:text="${professor.fullName}"></label>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+                <div class="form-group bd-callout bd-callout-primary row">
+                    <label class="col-sm-2 col-form-label h5">Étudiants</label>
+                    <th:block th:each="student : ${students}">
+                        <div class="col-auto my-1">
+                            <div class="custom-control custom-checkbox mr-sm-2">
+                                <input th:checked="${selectedStudents != null && selectedStudents.contains(student.id.toString())}" name="students" type="checkbox" class="custom-control-input" th:value="${student.id}"
+                                       th:id="'student' + ${student.id}">
+                                <label class="custom-control-label" th:for="'student' + ${student.id}"
+                                       th:text="${student.fullName}"></label>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+
+
+                <!-- Picture -->
+                <div class="form-group bd-callout row bd-callout-primary row">
+                    <label for="archive-picture" class="col-sm-2 col-form-label h5">Image</label>
+                    <div class="custom-file overflow-hidden rounded-pill col-sm-10">
+                        <input id="archive-picture" type="file" name="image" onchange="upload_img(this);"
+                               class="custom-file-input rounded-pill mb-2"  accept="image/*">
+                        <label for="archive-picture" class="custom-file-label rounded-pill">Choisir l'image de
+                            l'article
+                        </label>
+                    </div>
+                    <div class="col-12 text-center mt-3">
+                        <img id="img_id" class="img-fluid" th:style="${archive.image == null ? 'display: none;;' : ''}" th:src="${archive.image != null ? '/uploads/archives/images/' + archive.image : ''}" alt="Article image"/>
+                    </div>
+                </div>
+
+                <!-- Confirm image modification -->
+                <div th:if="${archive.id != null}" class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" name="confirm-image-edit">
+                    <label class="custom-control-label">Modifier l'image de l'article</label>
+                </div>
+
+                <!-- File -->
+                <div class=" form-group bd-callout row bd-callout-primary row">
+                    <label for="archive-picture" class="col-sm-2 col-form-label h5">Fichier</label>
+                    <div class="custom-file overflow-hidden rounded-pill col-sm-10">
+                        <input id="archive-file" type="file" name="file"
+                               class="custom-file-input rounded-pill mb-2">
+                        <label for="archive-picture" class="custom-file-label rounded-pill">Choisir le fichier de
+                            l'article
+                        </label>
+                    </div>
+                </div>
+                <!-- Confirm file modification -->
+                <div th:if="${archive.id != null}" class="custom-control custom-switch">
+                    <input type="checkbox" name="confirm-file-edit" class="custom-control-input">
+                    <label class="custom-control-label">Modifier le fichier de l'article</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg btn-sm btn-block"><i class="far fa-save"></i>
+                    Enregistrer
+                </button>
+
+
             </form>
 
         </div>
@@ -49,15 +167,32 @@
 <div th:replace="~{/layouts/js :: javascript}"></div>
 <script>
     $(document).ready(() => {
-        ClassicEditor
-            .create( document.querySelector( '#editor' ) )
-            .then( editor => {
-                console.log( editor );
-            } )
-            .catch( error => {
-                console.error( error );
-            } );
+        var data = "[[${archive.content}]]";
+        var htmlObject = document.createElement('div');
+        htmlObject.innerHTML = data;
+        var editor = ClassicEditor
+            .create(document.querySelector('#editor'))
+            .then(editor => {
+                editor.setData(htmlObject);
+
+            })
+            .catch(error => {
+                console.error(error);
+            });
     });
+
+    function upload_img(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#img_id').attr('src', e.target.result);
+                $('#img_id').show();
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 
 </script>
 

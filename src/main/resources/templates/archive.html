@@ -5,7 +5,7 @@
 <head th:include="/layouts/header :: head">
 
     <!-- @Title part -->
-    <title id="pageTitle">Acceuil</title>
+    <title id="pageTitle" th:text="'Archive : ' + ${archive.title}">Archive</title>
 
 </head>
 <!-- @Body section -->
@@ -20,47 +20,42 @@
      th:insert="~{/layouts/messages :: messages}"></div>
 
 <!-- @Container section -->
+<!-- Page Content -->
 <div class="container">
 
-    <div class="row">
+    <div class="row mb-5">
 
-        <!-- Blog Entries Column -->
-        <div class="col-md-8">
+        <!-- Post Content Column -->
+        <div class="col-lg-8">
 
-            <h1 class="my-4">Liste des archives enregistrés
-                <small><i class="fas fa-file-archive"></i> Archives universitaires</small>
-            </h1>
+            <!-- Title -->
+            <h1 class="mt-4" th:text="${archive.title}">Post Title</h1>
 
-            <!-- Blog Post -->
-            <div class="card mb-4" th:each="archive : ${archives}">
-                <a th:data-fancybox="'/uploads/archives/images/' + ${archive.image}" th:href="'/uploads/archives/images/' + ${archive.image}">
-                    <img class="card-img-top" th:src="'/uploads/archives/images/' + ${archive.image}" height="300"
-                         width="700" alt="Card image cap">
-                </a>
-                <div class="card-body">
-                    <h2 class="card-title" th:text="${archive.title}"></h2>
-                    <p class="card-text">CONTENT PART</p>
-                    <a th:href="@{'/archives/' + ${archive.id}}" class="btn btn-primary"><i
-                            class="fas fa-angle-double-right"></i> Lire&rarr;</a>
-                </div>
-                <div class="card-footer text-muted" th:text="${archive.publishDate}">
-                </div>
-            </div>
+            <!-- Author -->
+            <p class="lead">
+                Publié par
+                <a th:href="@{'/profiles/' + ${archive.publisher.id}}" th:text="${archive.publisher.fullName}"></a>
+            </p>
 
-            <div th:if="${archives == null || archives.size() == 0}"
-                 class="alert alert-warning text-center font-weight-bold">
-                <i class="fas fa-exclamation-triangle"></i> Aucun archive n'a été trouvé!
-            </div>
+            <hr>
 
-            <!-- Pagination -->
-            <ul class="pagination justify-content-center mb-4">
-                <li class="page-item">
-                    <a class="page-link" href="#">&larr; Older</a>
-                </li>
-                <li class="page-item disabled">
-                    <a class="page-link" href="#">Newer &rarr;</a>
-                </li>
-            </ul>
+            <!-- Date/Time -->
+            <p th:text="${'Publié le ' + publishDate + ' à ' + #dates.format(archive.publishDate, 'HH:mm:ss')}"></p>
+
+            <hr>
+
+            <!-- Preview Image -->
+            <a th:data-fancybox="'/uploads/archives/images/' + ${archive.image}"
+               th:href="'/uploads/archives/images/' + ${archive.image}">
+                <img class="img-fluid rounded" th:src="'/uploads/archives/images/' + ${archive.image}" width="900"
+                     height="300" alt="">
+            </a>
+            <hr>
+
+            <!-- Post Content -->
+            <p th:utext="${archive.content}"></p>
+
+            <hr class="mb-5">
 
         </div>
 
@@ -129,8 +124,8 @@
     </div>
     <!-- /.row -->
 
-
 </div>
+<!-- /.container -->
 
 
 <!-- @Footer include section -->
