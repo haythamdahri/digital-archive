@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- @head include section -->
+<head th:include="/layouts/header :: head">
+
+    <!-- @Title part -->
+    <title id="pageTitle">Acceuil</title>
+
+</head>
+<!-- @Body section -->
+<body>
+
+<!-- @Navbar section -->
+<th:block th:replace="~{/layouts/navbar :: navbar}"/>
+
+
+<!-- @Content section -->
+<div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto"
+     th:insert="~{/layouts/messages :: messages}"></div>
+
+<!-- @Container section -->
+<div class="container">
+
+    <div class="row">
+
+        <!-- Blog Entries Column -->
+        <div class="col-md-8">
+
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation"></i> Vous n'êtes pas autorisé à accéder à cette page! <a th:href="@{/}">Acceuil</a>
+            </div>
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4" th:insert="~{/layouts/sidebar :: sidebar}">
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+
+</div>
+
+
+<!-- @Footer include section -->
+<th:block th:replace="~{/layouts/footer :: footer}"/>
+
+<!-- @Javascript include section -->
+<div th:replace="~{/layouts/js :: javascript}"></div>
+
+</body>
+</html>

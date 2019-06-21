@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- @head include section -->
 <head th:include="/layouts/header :: head">
 
     <!-- @Title part -->
-    <title id="pageTitle">Acceuil</title>
+    <title id="pageTitle">Archive</title>
 </head>
 <!-- @Body section -->
 <body>
@@ -183,9 +183,49 @@
                                     </form>
                                     <!-- End -->
 
+                                    <th:block sec:authorize="hasRole('PROFESSOR')">
+                                    <!-- Add archive only for professors -->
                                     <hr>
 
-                                    <a th:href="@{/archives/add}">Ajouter un archive</a>
+                                    <a th:href="@{/archives/add}"><i class="fas fa-folder-plus"></i> Ajouter un archive</a>
+
+                                    <hr>
+                                    <!-- Published Archives -->
+                                    <table class="table">
+                                        <thead class="thead-light">
+                                        <tr align="center">
+                                            <th scope="col">#</th>
+                                            <th scope="col">Titre</th>
+                                            <th scope="col" colspan="2">Actions</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr align="center" th:each="archive : ${archives}">
+                                            <th scope="row" th:text="${archive.id}">1</th>
+                                            <td th:text="${archive.title}">Mark</td>
+                                            <td>
+                                                <a class="btn btn-primary btn-sm" th:href="@{'/archives/' + ${archive.id} + '/edit'}"><i
+                                                        class="fas fa-edit"></i> Modifier</a>
+                                            </td>
+                                            <td>
+                                                <form method="POST" th:action="@{/archives/delete}">
+                                                    <input type="hidden" name="id" th:value="${archive.id}"/>
+                                                    <button type="submit" class="btn btn-danger btn-sm"><i
+                                                            class="far fa-trash-alt"></i> Supprimer
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="alert alert-warning text-center font-weight-bold"
+                                                th:if="${archives == null || archives.size() == 0}">
+                                                <i class="fas fa-exclamation"></i> Aucun archive n'a été trouvé!
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    </th:block>
 
                                 </div>
                             </div>
