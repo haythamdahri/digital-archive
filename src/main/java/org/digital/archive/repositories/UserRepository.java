@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-@RepositoryRestResource
+@RepositoryRestResource(path = "/api/users")
 public interface UserRepository extends JpaRepository<User, Long> {
 
     public User findByEmail(@Param("email") String email);

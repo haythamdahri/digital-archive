@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Collection;
 
 @Repository
-@RepositoryRestResource
+@RepositoryRestResource(path = "/api/students")
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
     public Student findByEmail(@Param("email") String email);

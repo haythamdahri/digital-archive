@@ -41,7 +41,7 @@ public class ArchivePlatformApplication implements CommandLineRunner {
 
         // Create a new user
         String hash = bCryptPasswordEncoder.encode("toortoor");
-        /*Student haytham = new Student("INFORMATIQUE", 2018L, null, Level.MASTER);
+        /*Student haytham = new Student("INFORMATIQUE", 2018L, null, null, Level.MASTER);
         haytham.setPicture("/src/image.png");
         haytham.setEmail("haytham.dahri@gmail.com");
         haytham.setPassword(hash);
@@ -50,7 +50,7 @@ public class ArchivePlatformApplication implements CommandLineRunner {
         haytham.setBirthDate(new Date(1997, 8, 26));
         haytham.setUsername("haythamdahri");
 
-        Professor housni = new Professor("INFORMATIQUE", 2006L, null);
+        Professor housni = new Professor("INFORMATIQUE", 2006L, null, null);
         housni.setPicture("/src/image.png");
         housni.setEmail("khalid.housni@gmail.com");
         housni.setPassword(hash);
@@ -69,7 +69,7 @@ public class ArchivePlatformApplication implements CommandLineRunner {
             if (roleType == RoleType.ROLE_PROFESSOR) {
                 housni.addRole(role);
                 housni = this.professorRepository.save(housni);
-            } else {
+            } else if( roleType == RoleType.ROLE_STUDENT ) {
                 haytham.addRole(role);
                 haytham = this.studentRepository.save(haytham);
             }

@@ -1,48 +1,66 @@
 package org.digital.archive.services;
 
-import org.digital.archive.entities.Professor;
-import org.digital.archive.entities.Role;
-import org.digital.archive.repositories.ProfessorRepository;
-import org.digital.archive.repositories.RoleRepository;
+import org.digital.archive.entities.Archive;
+import org.digital.archive.repositories.ArchiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
 @Service
-public class ProfessorServiceImpl implements ProfessorService {
+public class ArchiveServiceImpl implements ArchiveService {
 
     @Autowired
-    private ProfessorRepository professorRepository;
+    private ArchiveRepository archiveRepository;
 
     @Override
-    public Professor saveProfessor(Professor professor) {
-        return this.professorRepository.save(professor);
+    public Archive saveArchive(Archive archive) {
+        return this.archiveRepository.save(archive);
     }
 
     @Override
-    public Professor getProfessor(Long id) {
-        Optional<Professor> professorOptional = this.professorRepository.findById(id);
-        if( professorOptional.isPresent() ) {
-            return professorOptional.get();
+    public Archive getArchive(Long id) {
+        Optional<Archive> archiveOptional = this.archiveRepository.findById(id);
+        if (archiveOptional.isPresent()) {
+            return archiveOptional.get();
         }
         return null;
     }
 
     @Override
-    public Professor getProfessor(String email) {
-        return this.professorRepository.findByEmail(email);
+    public Page<Archive> getArchives(String title, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("publishDate").descending());
+        return this.archiveRepository.findByTitleContainingIgnoreCase(title, pageRequest);
     }
 
     @Override
-    public boolean deleteProfessor(Long id) {
-        this.professorRepository.delete(this.getProfessor(id));
+    public Page<Archive> getArchives(Long publisherId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("publishDate").descending());
+        return this.archiveRepository.findByPublisherId(publisherId, pageRequest);
+    }
+
+    @Override
+    public boolean deleteArchive(Long id) {
+        this.archiveRepository.delete(this.getArchive(id));
         return true;
     }
 
     @Override
-    public Collection<Professor> getProfessors() {
-        return this.professorRepository.findAll();
+    public Page<Archive> getArchives(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("publishDate").descending());
+        return this.archiveRepository.findAll(pageRequest);
+    }
+
+    @Override
+    public Collection<Archive> getArchives() {
+        Collection<Archive> archives = new ArrayList<>();
+        Iterable<Archive> archiveIterable = this.archiveRepository.findAll();
+        archiveIterable.forEach(archives::add);
+        return archives;
     }
 }

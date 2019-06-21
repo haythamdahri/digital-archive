@@ -1,9 +1,7 @@
 package org.digital.archive.controllers;
 
-import org.digital.archive.entities.Professor;
-import org.digital.archive.entities.RoleType;
-import org.digital.archive.entities.Student;
-import org.digital.archive.entities.User;
+import org.digital.archive.entities.*;
+import org.digital.archive.services.ArchiveService;
 import org.digital.archive.services.ProfessorService;
 import org.digital.archive.services.StudentService;
 import org.digital.archive.services.UserService;
@@ -12,6 +10,7 @@ import org.digital.archive.utils.SecurityConstants;
 import org.digital.archive.utils.SecurityHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -48,18 +47,28 @@ public class MainController {
     private UserService userService;
 
     @Autowired
+    private ArchiveService archiveService;
+
+    @Autowired
     private Map<RoleType, String> rolesMap;
 
     @Value("${file.upload-dir}")
     private String path;
 
+    private final int size = 1;
+
     /*
      * Home page controller (GET REQUESTS)
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView home() {
+    public ModelAndView home(@RequestParam(name = "page", defaultValue = "0") int page,  @RequestParam(value = "archive-search", required = false) String search) {
         ModelAndView modelAndView = new ModelAndView("index");
-        modelAndView.addObject("name", "HAYTHAM DAHRI");
+        if( search != null ) {
+            modelAndView.addObject("archives", this.archiveService.getArchives(search, page, size));
+        } else {
+            modelAndView.addObject("archives", this.archiveService.getArchives(page, size));
+        }
+        modelAndView.addObject("search", search);
         return modelAndView;
     }
 
@@ -81,7 +90,7 @@ public class MainController {
      * Profile page controller (GET REQUESTS)
      */
     @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public String profileGet(Model model, RedirectAttributes redirectAttributes) {
+    public String profileGet(@RequestParam(name = "page", defaultValue = "0") int page, Model model, RedirectAttributes redirectAttributes) {
         User user = this.securityHelper.getConnectedUser();
 
         // Retrieve the specialized classes from the parent one
@@ -93,6 +102,7 @@ public class MainController {
         model.addAttribute("userModal", user);
         model.addAttribute("professor", professor);
         model.addAttribute("student", student);
+        model.addAttribute("archives", this.archiveService.getArchives(user.getId(), page, this.size));
         model.addAttribute("roles", this.rolesMap);
         return "profile";
     }
@@ -183,6 +193,14 @@ public class MainController {
     }
 
     /*
+    * @Access denied page
+    */
+    @RequestMapping(value = "/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
+
+    /*
      * @Profile picture update controller (POST REQUESTS)
      */
     @PostMapping("/profile/update-picture")
@@ -222,8 +240,10 @@ public class MainController {
     }
 
     /*
-     *
+     * @Archive controller (GET REQUESTS)
+     * Page protected only for professors, administrators and moderators
      */
+    @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
     @RequestMapping(value = "/archives/add", method = RequestMethod.GET)
     public String profileGet(Model model) {
 
@@ -237,9 +257,150 @@ public class MainController {
         model.addAttribute("user", user);
         model.addAttribute("professors", professors);
         model.addAttribute("students", students);
+        Archive archive = new Archive();
+        model.addAttribute("archive", archive);
 
         return "archive-form";
 
+    }
+
+    /*
+     * @Archive controller (POST REQUESTS)
+     * Page protected only for professors, administrators and moderators
+     */
+    @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
+    @RequestMapping(value = "/archives/add", method = RequestMethod.POST)
+    public String profilePost(@RequestParam(value = "title", defaultValue = "empty") String title, @RequestParam(value = "content", defaultValue = "empty") String content,
+                              @RequestParam(value = "professors", defaultValue = "empty") String[] professors, @RequestParam(value = "students", defaultValue = "empty") String[] students,
+                              @RequestParam(value = "image", defaultValue = "empty") MultipartFile image, @RequestParam(value = "file", defaultValue = "empty") MultipartFile file,
+                              @RequestParam(value = "confirm-image-edit", defaultValue = "true") boolean confirmImageEdit,
+                              @RequestParam(value = "confirm-file-edit", defaultValue = "true") boolean confirmFileEdit, Model model,
+                              RedirectAttributes redirectAttributes) {
+
+
+        // Retrieve connected user
+        User user = this.securityHelper.getConnectedUser();
+
+        // Create the archive
+        Archive archive = new Archive();
+
+        try {
+
+            if (!Arrays.asList(title, content, professors, image, confirmFileEdit, confirmImageEdit, students, file).contains("empty")) {
+
+
+                // Retrieve the professor
+                Professor professor = this.professorService.getProfessor(user.getId());
+
+                // Create a new archive based on the sent ddata from user
+                archive.setPublisher(professor);
+                archive.setTitle(title);
+                archive.setContent(content);
+                archive.setPublishDate(new Date());
+                archive.setImage("temp-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
+                archive.setFile("temp-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+
+                // Set archive's professors
+                for (String professorId : professors) {
+                    archive.addProfessor(this.professorService.getProfessor(Long.parseLong(professorId)));
+                }
+
+                // Set archive's students
+                for (String studentId : students) {
+                    archive.addStudent(this.studentService.getStudent(Long.parseLong(studentId)));
+                }
+
+
+                // Check the validity of archive before persistence
+                archive = this.archiveService.saveArchive(archive);
+
+
+                System.out.println("GOOD");
+
+                if (confirmImageEdit) {
+                    // Upload archive image or update it if exists
+                    archive.setImage(archive.getId() + "-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
+                    byte[] bytes = image.getBytes();
+                    Path path = Paths.get(SecurityConstants.archivesImagesUploadDirectory + archive.getId() + "-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
+                    Files.write(path, bytes);
+                }
+
+                if (confirmFileEdit) {
+                    // Upload archive image or update it if exists
+                    archive.setFile(archive.getId() + "-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                    byte[] bytes = file.getBytes();
+                    Path path = Paths.get(SecurityConstants.archivesFilesUploadDirectory + archive.getId() + "-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                    Files.write(path, bytes);
+                }
+
+
+                // Resave archive
+                this.archiveService.saveArchive(archive);
+
+                // Redirect user with successfull message
+                redirectAttributes.addFlashAttribute("success", "L'archive est ajouté avec succés");
+                return "redirect:/profile";
+            } else {
+                throw new Exception();
+            }
+        } catch (Exception exception) {
+
+
+            System.out.println(exception.getMessage());
+
+            // Retrieve professors and students
+            Collection<Professor> professorCollection = this.professorService.getProfessors();
+            Collection<Student> studentCollection = this.studentService.getStudents();
+
+            model.addAttribute("user", user);
+            model.addAttribute("professors", professorCollection);
+            model.addAttribute("students", studentCollection);
+            model.addAttribute("archive", archive);
+
+            Collection<String> profes = new ArrayList<>();
+            Collection<String> stds = new ArrayList<>();
+
+            for (String professorId : professors) {
+                profes.add(professorId);
+            }
+
+            for (String studentId : students) {
+                stds.add(studentId);
+            }
+
+            model.addAttribute("selectedProfessors", profes);
+            model.addAttribute("selectedStudents", stds);
+
+            model.addAttribute("error", "Une erreur est survenue, veuillez verifier les champs puis ressayer!");
+
+            return "archive-form";
+        }
+    }
+
+    /*
+     * Single Archive
+     */
+    @RequestMapping(value = "/archives/{id}", method = RequestMethod.GET)
+    public String archiveGet(@PathVariable(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
+        if (id != null) {
+
+            // Retrieve the archive from database
+            Archive archive = this.archiveService.getArchive(id);
+
+            if (archive != null) {
+                String publishDate = SimpleDateFormat.getDateInstance(
+                        SimpleDateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
+                model.addAttribute("archive", archive);
+                model.addAttribute("publishDate", publishDate);
+                return "archive";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Aucun archive n'a été trouvé!");
+                return "redirect:/";
+            }
+
+        } else {
+            return "redirect:/";
+        }
     }
 
 }

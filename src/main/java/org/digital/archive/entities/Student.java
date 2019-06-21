@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -28,6 +29,10 @@ public class Student extends User {
 
     @Column(name = "finish_year", updatable = true, insertable = true)
     private Long finishYear;
+
+    // Prevent archive's delete when deleting a student
+    @ManyToMany(mappedBy = "students", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private Collection<Archive> archives;
 
     @Enumerated(EnumType.STRING)
     private Level level;

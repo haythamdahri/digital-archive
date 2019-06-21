@@ -25,10 +25,7 @@ public class SecurityHelper {
 
     private static final Map<RoleType, String> roles = Stream.of(
             new AbstractMap.SimpleEntry<>(RoleType.ROLE_PROFESSOR, "Professeur"),
-            new AbstractMap.SimpleEntry<>(RoleType.ROLE_ADMINISTRATOR, "Administrateur"),
-            new AbstractMap.SimpleEntry<>(RoleType.ROLE_MODERATOR, "Moderateur"),
-            new AbstractMap.SimpleEntry<>(RoleType.ROLE_STUDENT, "Étudiant"),
-            new AbstractMap.SimpleEntry<>(RoleType.ROLE_USER, "Utilisateur"))
+            new AbstractMap.SimpleEntry<>(RoleType.ROLE_STUDENT, "Étudiant"))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 

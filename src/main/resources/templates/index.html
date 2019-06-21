@@ -54,11 +54,18 @@
 
             <!-- Pagination -->
             <ul class="pagination justify-content-center mb-4">
-                <li class="page-item">
-                    <a class="page-link" href="#">&larr; Older</a>
+                <li class="page-item" th:if="${archives.hasPrevious()}">
+                    <a class="page-link" th:href="@{/(page=${archives.number - 1})}">&larr;Precédent</a>
                 </li>
-                <li class="page-item disabled">
-                    <a class="page-link" href="#">Newer &rarr;</a>
+                <li class="page-item disabled" th:if="${!archives.hasPrevious()}">
+                    <a class="page-link" href="#">&larr;Precédent</a>
+                </li>
+
+                <li class="page-item" th:if="${archives.hasNext()}">
+                    <a class="page-link" th:href="@{/(page=${archives.number + 1})}">Suivant&rarr;</a>
+                </li>
+                <li class="page-item disabled" th:if="${!archives.hasNext()}">
+                    <a class="page-link" href="#">Suivant&rarr;</a>
                 </li>
             </ul>
 

@@ -84,7 +84,7 @@ public class User implements Serializable {
     // Bi-directional relationship
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_email"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_role"))
     private Collection<Role> roles;
 
