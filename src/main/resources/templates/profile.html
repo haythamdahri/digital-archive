@@ -200,7 +200,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr align="center" th:each="archive : ${archives}">
+                                        <tr align="center" th:each="archive : ${archives.content}">
                                             <th scope="row" th:text="${archive.id}">1</th>
                                             <td th:text="${archive.title}">Mark</td>
                                             <td>
@@ -218,7 +218,7 @@
                                         </tr>
                                         <tr>
                                             <td colspan="4" class="alert alert-warning text-center font-weight-bold"
-                                                th:if="${archives == null || archives.size() == 0}">
+                                                th:if="${archives == null || archives.totalElements == 0}">
                                                 <i class="fas fa-exclamation"></i> Aucun archive n'a été trouvé!
                                             </td>
                                         </tr>
@@ -306,7 +306,7 @@
                                 <td colspan="2">
                                     <button type="button" class="btn btn-primary">
                                         Archives <span class="badge badge-light"
-                                                       th:text="${#lists.size(professor.archives)}"></span>
+                                                       th:text="${professor.archives.totalElements}"></span>
                                     </button>
                                 </td>
                             </tr>

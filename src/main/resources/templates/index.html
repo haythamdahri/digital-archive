@@ -32,7 +32,7 @@
             </h1>
 
             <!-- Blog Post -->
-            <div class="card mb-4" th:each="archive : ${archives}">
+            <div class="card mb-4" th:each="archive : ${archives.content}">
                 <a th:data-fancybox="'/uploads/archives/images/' + ${archive.image}" th:href="'/uploads/archives/images/' + ${archive.image}">
                     <img class="card-img-top" th:src="'/uploads/archives/images/' + ${archive.image}" height="300"
                          width="700" alt="Card image cap">
@@ -47,7 +47,7 @@
                 </div>
             </div>
 
-            <div th:if="${archives == null || archives.size() == 0}"
+            <div th:if="${archives == null || archives.totalElements == 0}"
                  class="alert alert-warning text-center font-weight-bold">
                 <i class="fas fa-exclamation-triangle"></i> Aucun archive n'a été trouvé!
             </div>
@@ -64,7 +64,6 @@
 
         </div>
 
-        <!-- Sidebar Widgets Column -->
         <!-- Sidebar Widgets Column -->
         <div class="col-md-4" th:insert="~{/layouts/sidebar :: sidebar}">
 
