@@ -47,7 +47,7 @@
 
             <th:block th:if="${archive.id != null}">
                 <h1 class="display-4 mt-4 mb-4 text-center"
-                    th:utext="'Modification archive: ' + '<i class=\'fas fa-edit\'></i> ' + ${archive.title}"></h1>
+                    th:utext="'Modification Archive ' + '<br><i class=\'fas fa-edit\'></i> ' + ${archive.title}"></h1>
             </th:block>
 
             <th:block th:unless="${archive.id != null}">

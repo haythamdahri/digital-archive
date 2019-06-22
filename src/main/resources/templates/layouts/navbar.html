@@ -17,10 +17,10 @@
                         class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/professors}"><i class="fas fa-chalkboard-teacher"></i> Professeurs</a>
+                <a class="nav-link" th:href="@{/users(type='professors')}"><i class="fas fa-chalkboard-teacher"></i> Professeurs</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:href="@{/}"><i class="fas fa-user-graduate"></i> Étudiants</a>
+                <a class="nav-link" th:href="@{/users(type='etudiants')}"><i class="fas fa-user-graduate"></i> Étudiants</a>
             </li>
 
             <th:block sec:authorize="isAnonymous()">
@@ -40,8 +40,13 @@
                 </li>
             </th:block>
         </ul>
-        <form th:method="GET" th:action="@{/}" class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" name="user-search" placeholder="Chercher un utilisateur..."
+        <form th:method="GET" th:action="@{/users}" class="form-inline my-2 my-lg-0">
+            <select name="type" class="form-control mr-sm-2">
+                <option disabled="true">-- Selectionner le type d'utilisateur --</option>
+                <option th:selected="${type != null && type == 'professors' ? 'selected' : ''}" value="professors">Professeurs</option>
+                <option th:selected="${type != null && type == 'students' ? 'selected' : ''}" value="students">Étudiants</option>
+            </select>
+            <input class="form-control mr-sm-2" type="search" th:value="${user_search != null ? user_search : ''}" name="user-search" placeholder="Chercher un utilisateur..."
                    aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-search"></i> Rechercher</button>
         </form>

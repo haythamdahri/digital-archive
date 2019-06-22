@@ -74,6 +74,16 @@
                         </div>
                     </div>
 
+                    <!-- About -->
+                    <div class="form-group">
+                        <label for="email" class="col-form-label">Biographie:</label>
+                        <textarea th:field="*{about}" type="text" class="form-control form-control-sm"
+                               th:classappend="${#fields.hasErrors('about') ? 'is-invalid' : ''}" id="about"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('about')}"
+                             th:errors="*{about}">about Error
+                        </div>
+                    </div>
+
                     <!-- Picture -->
                     <input th:field="*{picture}" type="hidden" />
 

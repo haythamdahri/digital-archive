@@ -5,7 +5,7 @@
 <head th:include="/layouts/header :: head">
 
     <!-- @Title part -->
-    <title id="pageTitle">Archive</title>
+    <title id="pageTitle">Profil utilisateur</title>
 </head>
 <!-- @Body section -->
 <body>
@@ -187,7 +187,7 @@
                                         <!-- Add archive only for professors -->
                                         <hr>
 
-                                        <a th:href="@{/archives/add}"><i class="fas fa-folder-plus"></i> Ajouter un
+                                        <a th:href="@{/archives/save}"><i class="fas fa-folder-plus"></i> Ajouter un
                                             archive</a>
 
                                         <hr>
@@ -303,6 +303,10 @@
                             <td th:text="${user.birthDate}" colspan="2"></td>
                         </tr>
                         <tr>
+                            <th scope="row">À propos</th>
+                            <td th:utext="${'<p>' + user.about + '</p>'}" colspan="2"></td>
+                        </tr>
+                        <tr>
                             <th scope="row">Roles</th>
                             <td colspan="2">
                                 <th:block th:each="role : ${user.roles}">
@@ -325,10 +329,10 @@
                             <tr>
                                 <th scope="row">Nombre de partcipations au archives</th>
                                 <td colspan="2">
-                                    <button type="button" class="btn btn-primary">
+                                    <a th:href="@{/(professor=${professor.id})}"><button type="button" class="btn btn-primary">
                                         Archives <span class="badge badge-light"
                                                        th:text="${professor.archives.size()}"></span>
-                                    </button>
+                                    </button></a>
                                 </td>
                             </tr>
                         </th:block>
