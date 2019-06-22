@@ -21,12 +21,12 @@
 
 <!-- @Container section -->
 <!-- Page Content -->
-<div class="container-fluid">
+<div class="container">
 
     <div class="row mb-5 shadow p-3 mb-5 bg-white rounded">
 
         <!-- Post Content Column -->
-        <div class="col-lg-8">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
             <!-- Title -->
             <h1 class="mt-4" th:text="${archive.title}">Post Title</h1>
@@ -34,13 +34,13 @@
             <!-- Author -->
             <p class="lead">
                 Publié par
-                <a th:href="@{'/profiles/' + ${archive.publisher.id}}" th:text="${archive.publisher.fullName}"></a>
+                <a th:href="@{'/users/' + ${archive.publisher.id}}" th:text="${archive.publisher.fullName}"></a>
             </p>
 
             <hr>
 
             <!-- Date/Time -->
-            <p th:text="${'Publié le ' + publishDate + ' à ' + #dates.format(archive.publishDate, 'HH:mm:ss')}"></p>
+            <p th:text="${'Le ' + publishDate + ' à ' + #dates.format(archive.publishDate, 'HH:mm:ss')}"></p>
 
             <hr>
 
@@ -55,12 +55,76 @@
             <!-- Post Content -->
             <p th:utext="${archive.content}"></p>
 
+            <!-- Students and professors -->
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link font-weight-bold" data-toggle="collapse" data-target="#collapseOne"
+                                    aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-user-tie"></i> Les Professeurs Juries
+                            </button>
+                        </h5>
+                    </div>
+
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item" th:each="professor : ${archive.professors}">
+                                    <a th:href="@{'/users/' + ${professor.id}}" th:text="${professor.fullName}"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed font-weight-bold" data-toggle="collapse" data-target="#collapseTwo"
+                                    aria-expanded="false" aria-controls="collapseTwo">
+                                <i class="fas fa-user-graduate"></i> Les Étudiants
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <div class="card-body">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item" th:each="student : ${archive.students}">
+                                        <a th:href="@{'/users/' + ${student.id}}" th:text="${student.fullName}"></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed  font-weight-bold" data-toggle="collapse" data-target="#collapseThree"
+                                    aria-expanded="false" aria-controls="collapseThree">
+                                <i class="far fa-file-pdf"></i> Fichier De L'article Publié
+                            </button>
+                        </h5>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <a
+                                            th:href="@{'/uploads/archives/files/' + ${archive.file}}">
+                                        <button class="btn btn-primary btn-lg btn-block btn-sm"><i
+                                                class="fas fa-download"></i> Télecharger
+                                        </button>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <hr class="mb-5">
-
-        </div>
-
-        <!-- Sidebar Widgets Column -->
-        <div class="col-md-4 " th:insert="~{/layouts/sidebar :: sidebar}">
 
         </div>
 

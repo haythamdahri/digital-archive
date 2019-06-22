@@ -47,7 +47,7 @@
 
             <th:block th:if="${archive.id != null}">
                 <h1 class="display-4 mt-4 mb-4 text-center"
-                    th:utext="'Modification archive: ' + '<i class=\'fas fa-edit\'></i> ' + archive.title"></h1>
+                    th:utext="'Modification archive: ' + '<i class=\'fas fa-edit\'></i> ' + ${archive.title}"></h1>
             </th:block>
 
             <th:block th:unless="${archive.id != null}">
@@ -65,13 +65,15 @@
                 </p>
             </div>
 
-            <form th::object="${archive}" enctype="multipart/form-data" method="POST" th:action="'/archives/add'">
+            <form th:object="${archive}" enctype="multipart/form-data" method="POST" th:action="'/archives/save'">
+
+                <input type="hidden" th:field="*{id}" />
 
                 <div class="form-group bd-callout bd-callout-primary row">
                     <label class="col-12">
                         <p class="h5">Titre de l'article</p>
                     </label>
-                    <input th:field="${archive.title}" class="form-control col-12" placeholder="Saisir le titre...">
+                    <input th:field="*{title}" class="form-control col-12" placeholder="Saisir le titre...">
                 </div>
 
                 <div class="form-group bd-callout bd-callout-primary row text-center">
@@ -79,7 +81,7 @@
                         <p class="h5">Contenu de l'article</p>
                     </label>
                 </div>
-                <textarea name="content" cols="80" th:field="${archive.content}" id="editor" />
+                <textarea name="content" cols="80" th:field="*{content}" id="editor" />
 
 
                 <div class="form-group bd-callout bd-callout-primary row">
@@ -129,8 +131,8 @@
 
                 <!-- Confirm image modification -->
                 <div th:if="${archive.id != null}" class="custom-control custom-switch">
-                    <input type="checkbox" class="custom-control-input" name="confirm-image-edit">
-                    <label class="custom-control-label">Modifier l'image de l'article</label>
+                    <input type="checkbox" class="custom-control-input" name="confirm-image-edit" id="confirm-image-edit">
+                    <label class="custom-control-label" for="confirm-image-edit">Modifier l'image de l'article</label>
                 </div>
 
                 <!-- File -->
@@ -145,9 +147,9 @@
                     </div>
                 </div>
                 <!-- Confirm file modification -->
-                <div th:if="${archive.id != null}" class="custom-control custom-switch">
-                    <input type="checkbox" name="confirm-file-edit" class="custom-control-input">
-                    <label class="custom-control-label">Modifier le fichier de l'article</label>
+                <div th:if="${archive.id != null}" class="custom-control custom-switch mb-5">
+                    <input type="checkbox" name="confirm-file-edit" class="custom-control-input" id="confirm-file-edit">
+                    <label class="custom-control-label" for="confirm-file-edit">Modifier le fichier de l'article</label>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg btn-sm btn-block"><i class="far fa-save"></i>
@@ -173,7 +175,7 @@
         var editor = ClassicEditor
             .create(document.querySelector('#editor'))
             .then(editor => {
-                editor.setData(htmlObject);
+                //editor.setData(htmlObject);
 
             })
             .catch(error => {
