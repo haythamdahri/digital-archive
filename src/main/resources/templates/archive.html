@@ -10,7 +10,68 @@
 </head>
 <!-- @Body section -->
 <body>
+<style>
+    .file-upload input[type='file'] {
+        display: none;
+    }
 
+    .rounded-lg {
+        border-radius: 1rem;
+    }
+
+    .custom-file-label.rounded-pill {
+        border-radius: 50rem;
+    }
+
+    .custom-file-label.rounded-pill::after {
+        border-radius: 0 50rem 50rem 0;
+    }
+
+    /* With arrow tabs */
+
+    .with-arrow .nav-link.active {
+        position: relative;
+    }
+
+    .with-arrow .nav-link.active::after {
+        content: '';
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #2b90d9;
+        position: absolute;
+        bottom: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: block;
+    }
+
+    /* lined tabs */
+
+    .lined .nav-link {
+        border: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .lined .nav-link:hover {
+        border: none;
+        border-bottom: 3px solid transparent;
+    }
+
+    .lined .nav-link.active {
+        background: none;
+        color: #555;
+        border-color: #2b90d9;
+    }
+
+
+    .nav-item .nav-link {
+        color: #555;
+    }
+
+    .text-uppercase {
+        letter-spacing: 0.1em;
+    }
+</style>
 <!-- @Navbar section -->
 <th:block th:replace="~{/layouts/navbar :: navbar}"/>
 
@@ -40,14 +101,21 @@
             <hr>
 
             <!-- Date/Time -->
-            <p th:text="${'Le ' + publishDate + ' à ' + #dates.format(archive.publishDate, 'HH:mm:ss')}"></p>
+            <div class="row text-center">
+                <p class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6"
+                   th:text="${'Le ' + publishDate + ' à ' + #dates.format(archive.publishDate, 'HH:mm:ss')}"></p>
+
+                <p class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6"
+                   th:utext="'<i class=\'far fa-eye\'></i> ' + ${archive.views}"></p>
+            </div>
 
             <hr>
 
             <!-- Preview Image -->
             <a th:data-fancybox="'/uploads/archives/images/' + ${archive.image}"
                th:href="'/uploads/archives/images/' + ${archive.image}">
-                <img class="img-fluid rounded mx-auto d-block" th:src="'/uploads/archives/images/' + ${archive.image}" width="900"
+                <img class="img-fluid rounded mx-auto d-block" th:src="'/uploads/archives/images/' + ${archive.image}"
+                     width="900"
                      height="300" alt="">
             </a>
             <hr>
@@ -56,63 +124,52 @@
             <p th:utext="${archive.content}"></p>
 
             <!-- Students and professors -->
-            <div id="accordion">
-                <div class="card">
-                    <div class="card-header" id="headingOne">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link font-weight-bold" data-toggle="collapse" data-target="#collapseOne"
-                                    aria-expanded="true" aria-controls="collapseOne">
-                                <i class="fas fa-user-tie"></i> Les Professeurs Juries
-                            </button>
-                        </h5>
-                    </div>
 
-                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
-                        <div class="card-body">
+            <hr>
+
+            <div class="col-12 text-center ml-auto mr-auto">
+                <p class="h6">Informations d'archive</p>
+            </div>
+
+            <div class="row">
+                <div class="col-3">
+                    <div class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home"
+                           role="tab" aria-controls="v-pills-home" aria-selected="true"><i class="fas fa-user-tie"></i>
+                            Les Professeurs Juries</a>
+                        <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile"
+                           role="tab" aria-controls="v-pills-profile" aria-selected="false"><i
+                                class="fas fa-user-graduate"></i> Les Étudiants</a>
+                        <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages"
+                           role="tab" aria-controls="v-pills-messages" aria-selected="false"><i
+                                class="far fa-file-pdf"></i> Fichier De L'article Publié</a>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
+                             aria-labelledby="v-pills-home-tab">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item" th:each="professor : ${archive.professors}">
-                                    <a th:href="@{'/users/' + ${professor.id}}" th:text="${professor.fullName}"></a>
+                                <li class="list-group-item text-center" th:each="professor : ${archive.professors}">
+                                    <span><a th:href="@{'/users/' + ${professor.id}}"
+                                             th:text="${professor.fullName}"></a></span>
                                 </li>
                             </ul>
                         </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingTwo">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link collapsed font-weight-bold" data-toggle="collapse" data-target="#collapseTwo"
-                                    aria-expanded="false" aria-controls="collapseTwo">
-                                <i class="fas fa-user-graduate"></i> Les Étudiants
-                            </button>
-                        </h5>
-                    </div>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
-                        <div class="card-body">
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item" th:each="student : ${archive.students}">
-                                        <a th:href="@{'/users/' + ${student.id}}" th:text="${student.fullName}"></a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingThree">
-                        <h5 class="mb-0">
-                            <button class="btn btn-link collapsed  font-weight-bold" data-toggle="collapse" data-target="#collapseThree"
-                                    aria-expanded="false" aria-controls="collapseThree">
-                                <i class="far fa-file-pdf"></i> Fichier De L'article Publié
-                            </button>
-                        </h5>
-                    </div>
-                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-                        <div class="card-body">
+                        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel"
+                             aria-labelledby="v-pills-profile-tab">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item">
-                                    <a
-                                            th:href="@{'/uploads/archives/files/' + ${archive.file}}">
+                                <li class="list-group-item text-center" th:each="student : ${archive.students}">
+                                    <span><a th:href="@{'/users/' + ${student.id}}"
+                                             th:text="${student.fullName}"></a></span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
+                             aria-labelledby="v-pills-messages-tab">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item text-center">
+                                    <a th:href="@{'/uploads/archives/files/' + ${archive.file}}">
                                         <button class="btn btn-primary btn-lg btn-block btn-sm"><i
                                                 class="fas fa-download"></i> Télecharger
                                         </button>

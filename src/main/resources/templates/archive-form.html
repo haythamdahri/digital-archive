@@ -73,7 +73,13 @@
                     <label class="col-12">
                         <p class="h5">Titre de l'article</p>
                     </label>
-                    <input th:field="*{title}" class="form-control col-12" placeholder="Saisir le titre...">
+                    <input th:classappend="${#fields.hasErrors('title') ? 'is-invalid' : ''}"
+                           th:field="*{title}" class="form-control col-12" placeholder="Saisir le titre...">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}"
+                         th:errors="*{title}">lastName
+                        Error
+                    </div>
+
                 </div>
 
                 <div class="form-group bd-callout bd-callout-primary row text-center">
@@ -125,7 +131,7 @@
                         </label>
                     </div>
                     <div class="col-12 text-center mt-3">
-                        <img id="img_id" class="img-fluid" th:style="${archive.image == null ? 'display: none;;' : ''}" th:src="${archive.image != null ? '/uploads/archives/images/' + archive.image : ''}" alt="Article image"/>
+                        <img th:if="${archive.image != null}" id="img_id" class="img-fluid" th:style="${archive.image == null ? 'display: none;;' : ''}" th:src="${archive.image != null ? '/uploads/archives/images/' + archive.image : ''}" alt="Article image"/>
                     </div>
                 </div>
 

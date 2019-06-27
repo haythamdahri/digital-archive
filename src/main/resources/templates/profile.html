@@ -203,7 +203,7 @@
                                             <tbody>
                                             <tr align="center" th:each="archive : ${archives.content}">
                                                 <th scope="row" th:text="${archive.id}">1</th>
-                                                <td th:text="${archive.title}">Mark</td>
+                                                <td><a target="_blank" th:href="@{'/archives/' + ${archive.id}}" th:text="${archive.title}"></a></td>
                                                 <td>
                                                     <a class="btn btn-primary btn-sm"
                                                        th:href="@{'/archives/' + ${archive.id} + '/edit'}"><i
@@ -331,7 +331,7 @@
                                 <td colspan="2">
                                     <a th:href="@{/(professor=${professor.id})}"><button type="button" class="btn btn-primary">
                                         Archives <span class="badge badge-light"
-                                                       th:text="${professor.archives.size()}"></span>
+                                                       th:text="${archivesCounter}"></span>
                                     </button></a>
                                 </td>
                             </tr>
