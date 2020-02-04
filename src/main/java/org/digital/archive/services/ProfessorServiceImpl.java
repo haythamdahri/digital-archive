@@ -1,12 +1,18 @@
 package org.digital.archive.services;
 
+import org.digital.archive.entities.Archive;
 import org.digital.archive.entities.Professor;
 import org.digital.archive.entities.Role;
+import org.digital.archive.entities.Student;
 import org.digital.archive.repositories.ProfessorRepository;
 import org.digital.archive.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -43,6 +49,22 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     @Override
     public Collection<Professor> getProfessors() {
-        return this.professorRepository.findAll();
+        Collection<Professor> professors = new ArrayList<>();
+        Iterable<Professor> professorIterable = this.professorRepository.findAll();
+        professorIterable.forEach(professors::add);
+        return professors;
     }
+
+    @Override
+    public Page<Professor> getProfessors(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
+        return this.professorRepository.findAll(pageRequest);
+    }
+
+    @Override
+    public Page<Professor> getProfessors(String search, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id").descending());
+        return this.professorRepository.findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(search, search, search, search, pageRequest);
+    }
+
 }

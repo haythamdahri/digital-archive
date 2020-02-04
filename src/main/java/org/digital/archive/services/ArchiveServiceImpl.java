@@ -45,14 +45,26 @@ public class ArchiveServiceImpl implements ArchiveService {
     }
 
     @Override
+    public Page<Archive> getArchives(Long publisherId, String title, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("publishDate").descending());
+        return this.archiveRepository.findByPublisherIdAndTitleContainingIgnoreCase(publisherId, title, pageRequest);
+    }
+
+    @Override
     public boolean deleteArchive(Long id) {
-        this.archiveRepository.delete(this.getArchive(id));
+        this.archiveRepository.deleteById(id);
         return true;
     }
 
     @Override
     public Page<Archive> getArchives(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by("publishDate").descending());
+        return this.archiveRepository.findAll(pageRequest);
+    }
+
+    @Override
+    public Page<Archive> getTrendingArchives(int size) {
+        PageRequest pageRequest = PageRequest.of(0, size, Sort.by("views").descending());
         return this.archiveRepository.findAll(pageRequest);
     }
 

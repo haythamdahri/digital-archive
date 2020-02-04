@@ -15,6 +15,8 @@ public interface ArchiveRepository extends PagingAndSortingRepository<Archive, L
 
     public Page<Archive> findByTitleContainingIgnoreCase(@Param("title") String title, @PageableDefault Pageable pageable);
 
+    public Page<Archive> findByPublisherIdAndTitleContainingIgnoreCase(@Param("id") Long publisherId, @Param("title") String title, @PageableDefault Pageable pageable);
+
     public Page<Archive> findByPublisherId(@Param("id") Long publisherId, @PageableDefault Pageable pageable);
 
 

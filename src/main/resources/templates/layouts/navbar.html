@@ -40,7 +40,7 @@
                 </li>
             </th:block>
         </ul>
-        <form th:method="GET" th:action="@{/users}" class="form-inline my-2 my-lg-0">
+        <form th:method="GET" th:action="@{/users}" class="form-inline my-2 my-lg-0" sec:authorize="isAuthenticated()">
             <select name="type" class="form-control mr-sm-2">
                 <option disabled="true">-- Selectionner le type d'utilisateur --</option>
                 <option th:selected="${type != null && type == 'professors' ? 'selected' : ''}" value="professors">Professeurs</option>

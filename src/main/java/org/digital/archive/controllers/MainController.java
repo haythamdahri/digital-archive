@@ -55,19 +55,34 @@ public class MainController {
     @Value("${file.upload-dir}")
     private String path;
 
-    private final int size = 1;
+    private final int size = 10;
 
     /*
      * Home page controller (GET REQUESTS)
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView home(@RequestParam(name = "page", defaultValue = "0") int page,  @RequestParam(value = "archive-search", required = false) String search) {
+    public ModelAndView home(@RequestParam(name = "professor", required = false) Long professorId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(value = "archive-search", required = false) String search) {
         ModelAndView modelAndView = new ModelAndView("index");
-        if( search != null ) {
-            modelAndView.addObject("archives", this.archiveService.getArchives(search, page, size));
-        } else {
-            modelAndView.addObject("archives", this.archiveService.getArchives(page, size));
+
+        // Put professor in the model
+        if (professorId != null) {
+            modelAndView.addObject("professor", this.professorService.getProfessor(professorId));
         }
+
+        if (search != null) {
+            if (professorId == null) {
+                modelAndView.addObject("archives", this.archiveService.getArchives(search, page, size));
+            } else {
+                modelAndView.addObject("archives", this.archiveService.getArchives(professorId, search, page, size));
+            }
+        } else {
+            if (professorId == null) {
+                modelAndView.addObject("archives", this.archiveService.getArchives(page, size));
+            } else {
+                modelAndView.addObject("archives", this.archiveService.getArchives(professorId, page, size));
+            }
+        }
+
         modelAndView.addObject("search", search);
         return modelAndView;
     }
@@ -102,6 +117,7 @@ public class MainController {
         model.addAttribute("userModal", user);
         model.addAttribute("professor", professor);
         model.addAttribute("student", student);
+        model.addAttribute("archivesCounter", this.archiveService.getArchives().stream().filter(archive -> archive.getPublisher().getId() == user.getId()).count());
         model.addAttribute("archives", this.archiveService.getArchives(user.getId(), page, this.size));
         model.addAttribute("roles", this.rolesMap);
         return "profile";
@@ -111,7 +127,10 @@ public class MainController {
      * Profile page controller (POST REQUESTS)
      */
     @RequestMapping(value = "/profile", method = RequestMethod.POST)
-    public String postProfile(@Valid @ModelAttribute("userModal") User user, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes) {
+    public String postProfile(@Valid @ModelAttribute("userModal") User user, BindingResult bindingResult, @RequestParam(name = "page", defaultValue = "0") int page, Model model, RedirectAttributes redirectAttributes) {
+
+        // Adding archives to the model
+        model.addAttribute("archives", this.archiveService.getArchives(page, this.size));
 
         // Retrieve the specialized classes from the parent one
         Professor professor = this.professorService.getProfessor(user.getId());
@@ -172,6 +191,7 @@ public class MainController {
             student.setUsername(user.getUsername());
             student.setEmail(user.getEmail());
             student.setBirthDate(user.getBirthDate());
+            student.setAbout(user.getAbout());
             student = this.studentService.saveStudent(student);
             user = student;
         } else {
@@ -180,6 +200,7 @@ public class MainController {
             professor.setUsername(user.getUsername());
             professor.setEmail(user.getEmail());
             professor.setBirthDate(user.getBirthDate());
+            professor.setAbout(user.getAbout());
             professor = this.professorService.saveProfessor(professor);
             user = professor;
         }
@@ -193,8 +214,8 @@ public class MainController {
     }
 
     /*
-    * @Access denied page
-    */
+     * @Access denied page
+     */
     @RequestMapping(value = "/access-denied")
     public String accessDenied() {
         return "access-denied";
@@ -244,7 +265,7 @@ public class MainController {
      * Page protected only for professors, administrators and moderators
      */
     @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
-    @RequestMapping(value = "/archives/add", method = RequestMethod.GET)
+    @RequestMapping(value = "/archives/save", method = RequestMethod.GET)
     public String profileGet(Model model) {
 
         // Retrieve connected
@@ -269,25 +290,33 @@ public class MainController {
      * Page protected only for professors, administrators and moderators
      */
     @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
-    @RequestMapping(value = "/archives/add", method = RequestMethod.POST)
-    public String profilePost(@RequestParam(value = "title", defaultValue = "empty") String title, @RequestParam(value = "content", defaultValue = "empty") String content,
+    @RequestMapping(value = "/archives/save", method = RequestMethod.POST)
+    public String profilePost(@RequestParam(value = "id", required = false) Long id, @RequestParam(value = "title", defaultValue = "empty") String title, @RequestParam(value = "content", defaultValue = "empty") String content,
                               @RequestParam(value = "professors", defaultValue = "empty") String[] professors, @RequestParam(value = "students", defaultValue = "empty") String[] students,
                               @RequestParam(value = "image", defaultValue = "empty") MultipartFile image, @RequestParam(value = "file", defaultValue = "empty") MultipartFile file,
-                              @RequestParam(value = "confirm-image-edit", defaultValue = "true") boolean confirmImageEdit,
-                              @RequestParam(value = "confirm-file-edit", defaultValue = "true") boolean confirmFileEdit, Model model,
+                              @RequestParam(value = "confirm-image-edit", required = false) String confirmImageEdit,
+                              @RequestParam(value = "confirm-file-edit", required = false) String confirmFileEdit, Model model,
                               RedirectAttributes redirectAttributes) {
-
 
         // Retrieve connected user
         User user = this.securityHelper.getConnectedUser();
 
-        // Create the archive
-        Archive archive = new Archive();
+        Archive archive = null;
+
+        if (id == null) {
+            // Create the archive
+            archive = new Archive();
+        } else {
+            archive = this.archiveService.getArchive(id);
+            if (archive == null) {
+                redirectAttributes.addFlashAttribute("error", "Aucun archive n'a été trouvé!");
+                return "redirect:/";
+            }
+        }
 
         try {
 
-            if (!Arrays.asList(title, content, professors, image, confirmFileEdit, confirmImageEdit, students, file).contains("empty")) {
-
+            if (!Arrays.asList(title, content, professors, file, image, confirmFileEdit, confirmImageEdit, students).contains("empty")) {
 
                 // Retrieve the professor
                 Professor professor = this.professorService.getProfessor(user.getId());
@@ -297,8 +326,15 @@ public class MainController {
                 archive.setTitle(title);
                 archive.setContent(content);
                 archive.setPublishDate(new Date());
-                archive.setImage("temp-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
-                archive.setFile("temp-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                archive.setProfessors(null);
+                archive.setStudents(null);
+
+                // Save archive to assign a new id
+                if (archive.getId() == null) {
+                    archive.setImage("temp-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
+                    archive.setFile("temp-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                    archive.setViews(1L);
+                }
 
                 // Set archive's professors
                 for (String professorId : professors) {
@@ -310,26 +346,28 @@ public class MainController {
                     archive.addStudent(this.studentService.getStudent(Long.parseLong(studentId)));
                 }
 
+                System.out.println(archive.getId() == null || (confirmImageEdit != null && !image.isEmpty()));
 
-                // Check the validity of archive before persistence
-                archive = this.archiveService.saveArchive(archive);
+                // Check image and file validity before proceeding
+                if (archive.getId() == null && image.isEmpty()) {
+                    throw new Exception();
+                } else if (archive.getId() == null && file.isEmpty()) {
+                    throw new Exception();
+                }
 
-
-                System.out.println("GOOD");
-
-                if (confirmImageEdit) {
+                if (archive.getId() == null || (confirmImageEdit != null && !image.isEmpty())) {
                     // Upload archive image or update it if exists
-                    archive.setImage(archive.getId() + "-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
+                    archive.setImage(new Date().getTime() + "-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
                     byte[] bytes = image.getBytes();
-                    Path path = Paths.get(SecurityConstants.archivesImagesUploadDirectory + archive.getId() + "-image." + this.archiveHelper.getExtensionByApacheCommonLib(image.getOriginalFilename()));
+                    Path path = Paths.get(SecurityConstants.archivesImagesUploadDirectory + archive.getImage());
                     Files.write(path, bytes);
                 }
 
-                if (confirmFileEdit) {
+                if (archive.getId() == null || (confirmFileEdit != null && !file.isEmpty())) {
                     // Upload archive image or update it if exists
-                    archive.setFile(archive.getId() + "-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                    archive.setFile(new Date().getTime() + "-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
                     byte[] bytes = file.getBytes();
-                    Path path = Paths.get(SecurityConstants.archivesFilesUploadDirectory + archive.getId() + "-file." + this.archiveHelper.getExtensionByApacheCommonLib(file.getOriginalFilename()));
+                    Path path = Paths.get(SecurityConstants.archivesFilesUploadDirectory + archive.getFile());
                     Files.write(path, bytes);
                 }
 
@@ -338,8 +376,8 @@ public class MainController {
                 this.archiveService.saveArchive(archive);
 
                 // Redirect user with successfull message
-                redirectAttributes.addFlashAttribute("success", "L'archive est ajouté avec succés");
-                return "redirect:/profile";
+                redirectAttributes.addFlashAttribute("success", "L'archive est enregistré avec succés");
+                return "redirect:/archives/" + archive.getId();
             } else {
                 throw new Exception();
             }
@@ -388,6 +426,10 @@ public class MainController {
             Archive archive = this.archiveService.getArchive(id);
 
             if (archive != null) {
+                // Increment views counter
+                archive.setViews(archive.getViews() != null ? archive.getViews() + 1 : 1);
+                archive = this.archiveService.saveArchive(archive);
+
                 String publishDate = SimpleDateFormat.getDateInstance(
                         SimpleDateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
                 model.addAttribute("archive", archive);
@@ -401,6 +443,137 @@ public class MainController {
         } else {
             return "redirect:/";
         }
+    }
+
+    /*
+     * @Edit Archive controller (GET REQUESTS)
+     */
+    @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
+    @RequestMapping(value = "/archives/{id}/edit", method = RequestMethod.GET)
+    public String profileGet(@PathVariable(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
+
+        if (id != null) {
+            // Retrieve the archive from database
+            Archive archive = this.archiveService.getArchive(id);
+            if (archive != null) {
+
+                // Retrieve connected
+                User user = this.securityHelper.getConnectedUser();
+
+                // Retrieve professors and students
+                Collection<Professor> professors = this.professorService.getProfessors();
+                Collection<Student> students = this.studentService.getStudents();
+
+                model.addAttribute("user", user);
+                model.addAttribute("professors", professors);
+                model.addAttribute("students", students);
+                model.addAttribute("archive", archive);
+
+
+                // Retrieve selected professors and students
+                Collection<String> profes = new ArrayList<>();
+                Collection<String> stds = new ArrayList<>();
+
+                for (Professor professor : archive.getProfessors()) {
+                    profes.add(professor.getId().toString());
+                }
+
+                for (Student student : archive.getStudents()) {
+                    stds.add(student.getId().toString());
+                }
+
+
+                model.addAttribute("selectedProfessors", profes);
+                model.addAttribute("selectedStudents", stds);
+
+
+                // Reformat date
+                String publishDate = SimpleDateFormat.getDateInstance(
+                        SimpleDateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
+                model.addAttribute("archive", archive);
+                model.addAttribute("publishDate", publishDate);
+                return "archive-form";
+            }
+        }
+        redirectAttributes.addFlashAttribute("error", "Aucun archive n'a été trouvé!");
+        return "redirect:/";
+
+    }
+
+    /*
+     * Single Archive
+     */
+    @RequestMapping(value = "/archives/delete", method = RequestMethod.POST)
+    public String deleteArchivePost(@RequestParam(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
+        System.out.println(id);
+        if (id != null) {
+            System.out.println(this.archiveService.getArchive(id));
+            this.archiveService.deleteArchive(id);
+        }
+        redirectAttributes.addFlashAttribute("success", "L'archive à été supprimé avec succés!");
+        return "redirect:/profile";
+    }
+
+    /*
+     * Users controllers(GET request)
+     */
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public String usersGet(@RequestParam(name = "type", required = false) String userType, @RequestParam(value = "user-search", required = false) String search, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "type", required = false) String type, Model model, RedirectAttributes redirectAttributes) {
+        if (userType != null && search != null) {
+            if (type != null && type.equalsIgnoreCase("professors")) {
+                model.addAttribute("users", this.professorService.getProfessors(search, page, this.size));
+                model.addAttribute("user_search", search);
+                model.addAttribute("type", "professors");
+                model.addAttribute("title", "Liste Des Professeurs");
+            } else {
+                model.addAttribute("users", this.studentService.getStudents(search, page, this.size));
+                model.addAttribute("title", "Liste Des Étudiants");
+                model.addAttribute("user_search", search);
+                model.addAttribute("type", "students");
+            }
+        } else {
+            if (type != null && type.equalsIgnoreCase("professors")) {
+                model.addAttribute("users", this.professorService.getProfessors(page, this.size));
+                model.addAttribute("title", "Liste Des Professeurs");
+                model.addAttribute("type", "professors");
+            } else {
+                model.addAttribute("users", this.studentService.getStudents(page, this.size));
+                model.addAttribute("title", "Liste Des Étudiants");
+                model.addAttribute("type", "students");
+            }
+        }
+
+
+        return "users";
+    }
+
+    /*
+     * User controllers(GET request)
+     */
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
+    public String userGet(@PathVariable(name = "id", required = true) Long id, Model model, RedirectAttributes redirectAttributes) {
+
+        // Retrieve connected user
+        User connectedUser = this.securityHelper.getConnectedUser();
+
+        // Redirect user to his profile if the same profile
+        if (connectedUser.getId() == id) {
+            return "redirect:/profile";
+        }
+
+        // Retrieve user from database
+        User user = this.userService.getUser(id);
+        Professor professor = this.professorService.getProfessor(id);
+        Student student = this.studentService.getStudent(id);
+
+        // Put data in the model
+        model.addAttribute("otherUser", user);
+        model.addAttribute("professor", professor);
+        model.addAttribute("archivesCounter", this.archiveService.getArchives().stream().filter(archive -> archive.getPublisher().getId() == user.getId()).count());
+        model.addAttribute("student", student);
+        model.addAttribute("roles", this.rolesMap);
+
+        return "user";
     }
 
 }

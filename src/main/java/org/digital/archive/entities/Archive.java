@@ -24,6 +24,9 @@ public class Archive {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "views")
+    private Long views;
+
     @Column(name = "title")
     @NotNull(message = "Titre de l'article ne peut pas être null")
     @NotEmpty(message = "Titre de l'article ne peut pas être vide")

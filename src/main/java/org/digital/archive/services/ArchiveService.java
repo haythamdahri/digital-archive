@@ -17,9 +17,13 @@ public interface ArchiveService {
 
     public Page<Archive> getArchives(Long publisherId, int page, int size);
 
+    public Page<Archive> getArchives(Long publisherId, String title, int page, int size);
+
     public boolean deleteArchive(Long id);
 
     public Page<Archive> getArchives(int page, int size);
+
+    public Page<Archive> getTrendingArchives(int size);
 
     public Collection<Archive> getArchives();
 

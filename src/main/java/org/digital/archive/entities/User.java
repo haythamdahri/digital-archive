@@ -35,7 +35,7 @@ public class User implements Serializable {
     @NotNull(message = "Nom utilisateur ne peut pas être null!")
     @NotEmpty(message = "Nom utilisateur ne peut pas être vide!")
     @Size(min = 5, max = 255, message = "Nom utilisateur non valide, veuillez ressayer avec un autre!")
-    @Pattern(regexp = "[a-zA-Z]{2,18}", message = "Format du nom utilisateur non valide!")
+    @Pattern(regexp = "^[a-zA-Z0-9]([._](?![._])|[a-zA-Z0-9]){6,18}[a-zA-Z0-9]${2,18}", message = "Format du nom utilisateur non valide!")
     private String username;
 
     // First name property
@@ -74,6 +74,13 @@ public class User implements Serializable {
     @NotEmpty(message = "Mot de passe ne peut pas être vide!")
     @Size(min = 5, max = 255, message = "Mot de passe non valide, veuillez ressayer avec un autre!")
     private String password;
+
+    // About property
+    @Column(name = "about")
+    @NotNull(message = "La description ne peut pas être null!")
+    @NotEmpty(message = "La description ne peut pas être vide!")
+    @Size(min = 10, max = 5000, message = "La description est non valide, veuillez ressayer avec un autre!")
+    private String about;
 
     // Birthdate property
     @Column(name = "birth_date")
