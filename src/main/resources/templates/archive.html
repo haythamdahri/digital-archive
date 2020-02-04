@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <!-- @head include section -->
-<head th:include="/layouts/header :: head">
+<head th:include="layouts/header :: head">
 
     <!-- @Title part -->
     <title id="pageTitle" th:text="'Archive : ' + ${archive.title}">Archive</title>
@@ -73,12 +73,12 @@
     }
 </style>
 <!-- @Navbar section -->
-<th:block th:replace="~{/layouts/navbar :: navbar}"/>
+<th:block th:replace="~{layouts/navbar :: navbar}"/>
 
 
 <!-- @Content section -->
 <div class="col-sm-12 col-md-9 col-lg-9 col-xl-9 ml-auto mr-auto"
-     th:insert="~{/layouts/messages :: messages}"></div>
+     th:insert="~{layouts/messages :: messages}"></div>
 
 <!-- @Container section -->
 <!-- Page Content -->
@@ -193,10 +193,10 @@
 
 
 <!-- @Footer include section -->
-<th:block th:replace="~{/layouts/footer :: footer}"/>
+<th:block th:replace="~{layouts/footer :: footer}"/>
 
 <!-- @Javascript include section -->
-<div th:replace="~{/layouts/js :: javascript}"></div>
+<div th:replace="~{layouts/js :: javascript}"></div>
 
 </body>
 </html>

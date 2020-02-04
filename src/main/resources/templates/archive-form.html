@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <!-- @head include section -->
-<head th:include="/layouts/header :: head">
+<head th:include="layouts/header :: head">
 
     <!-- Ckeditor CSS -->
     <link rel="stylesheet" th:href="@{/css/sample.css}"/>
@@ -36,7 +36,7 @@
 </style>
 
 <!-- @Navbar section -->
-<th:block th:replace="~{/layouts/navbar :: navbar}"/>
+<th:block th:replace="~{layouts/navbar :: navbar}"/>
 
 
 <!-- @Content section -->
@@ -56,7 +56,7 @@
             </th:block>
 
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto"
-                 th:insert="~{/layouts/messages :: messages}"></div>
+                 th:insert="~{layouts/messages :: messages}"></div>
 
             <div class="bd-callout bd-callout-info text-center row">
                 <h5 class="col-12">Article Universitaire</h5>
@@ -172,7 +172,7 @@
 </div>
 
 <!-- @Javascript include section -->
-<div th:replace="~{/layouts/js :: javascript}"></div>
+<div th:replace="~{layouts/js :: javascript}"></div>
 <script>
     $(document).ready(() => {
         var data = "[[${archive.content}]]";

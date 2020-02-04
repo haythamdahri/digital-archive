@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <!-- @head include section -->
-<head th:include="/layouts/header :: head">
+<head th:include="layouts/header :: head">
 
     <!-- @Title part -->
     <title id="pageTitle" th:text="${otherUser.fullName}"></title>
@@ -84,7 +84,7 @@
 
 
 <!-- @Navbar section -->
-<th:block th:replace="~{/layouts/navbar :: navbar}"/>
+<th:block th:replace="~{layouts/navbar :: navbar}"/>
 
 
 <!-- @Content section -->
@@ -134,7 +134,7 @@
 
 
             <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ml-auto mr-auto"
-                 th:insert="~{/layouts/messages :: messages}"></div>
+                 th:insert="~{layouts/messages :: messages}"></div>
 
             <ul class="nav nav-tabs nav-pills with-arrow lined flex-column flex-sm-row text-center" id="myTab"
                 role="tablist">
@@ -263,7 +263,7 @@
 
 
 <!-- @Javascript include section -->
-<div th:replace="~{/layouts/js :: javascript}"></div>
+<div th:replace="~{layouts/js :: javascript}"></div>
 
 </body>
 </html>

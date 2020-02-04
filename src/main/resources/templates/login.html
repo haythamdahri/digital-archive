@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <!-- @head include section -->
-<head th:include="/layouts/header :: head">
+<head th:include="layouts/header :: head">
 
     <!-- @Title part -->
     <title id="pageTitle">Connexion</title>
@@ -12,7 +12,7 @@
 <body>
 
 <!-- @Navbar section -->
-<th:block th:replace="~{/layouts/navbar :: navbar}"/>
+<th:block th:replace="~{layouts/navbar :: navbar}"/>
 
 <style>
 
@@ -145,7 +145,7 @@
                             <h3 class="login-heading mb-4"><i class="far fa-user-circle"></i> Authentification</h3>
 
                             <!-- @Messages section -->
-                            <th:block th:replace="~{/layouts/messages :: messages}"/>
+                            <th:block th:replace="~{layouts/messages :: messages}"/>
 
                             <form method="POST" th:action="@{/authenticate}">
                                 <div class="form-label-group">
@@ -177,7 +177,7 @@
 
 
 <!-- @Javascript include section -->
-<div th:replace="~{/layouts/js :: javascript}"></div>
+<div th:replace="~{layouts/js :: javascript}"></div>
 
 </body>
 </html>
