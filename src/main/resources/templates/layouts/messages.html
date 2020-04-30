@@ -5,7 +5,7 @@
 
     <div class="row mt-3">
         <!-- @Error Login Message section -->
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-danger alert-dismissible fade show"
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-danger alert-dismissible fade show shadow rounded"
              role="alert" th:if="${param.error != null}">
             <strong><i class="fas fa-exclamation-circle"></i> Email ou mot de passe incorrect</strong>, veuillez ressayer!
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -14,7 +14,7 @@
         </div>
 
         <!-- @Logout Message section -->
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-success alert-dismissible fade show"
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-success alert-dismissible fade show shadow rounded"
              role="alert" th:if="${param.logout != null}">
             <strong><i class="fas fa-info-circle"></i> Vous êtes déconnecté!</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -23,7 +23,7 @@
         </div>
 
         <!-- @Logout Message section -->
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-danger alert-dismissible fade show"
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-danger alert-dismissible fade show shadow rounded"
              role="alert" th:if="${error != null}">
             <i class="fas fa-exclamation"></i> <th:block th:text="${error}" />
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -32,7 +32,7 @@
         </div>
 
         <!-- @Logout Message section -->
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-success alert-dismissible fade show"
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mr-auto ml-auto alert alert-success alert-dismissible fade show shadow rounded"
              role="alert" th:if="${success != null}">
             <i class="fas fa-check-double"></i> <th:block th:text="${success}" />
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

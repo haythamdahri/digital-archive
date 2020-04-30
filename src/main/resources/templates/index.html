@@ -25,7 +25,7 @@
     <div class="row">
 
         <!-- Blog Entries Column -->
-        <div class="col-md-8">
+        <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
 
             <h1 class="my-4 text-center">Liste des archives enregistrés</h1>
 
@@ -43,13 +43,13 @@
                     <img class="card-img-top" th:src="'/uploads/archives/images/' + ${archive.image}" height="300"
                          width="700" alt="Card image cap">
                 </a>
-                <div class="card-body">
+                <div class="card-body shadow-sm rounded">
                     <h2 class="card-title" th:text="${archive.title}"></h2>
                     <p class="card-text"></p>
                     <a th:href="@{'/archives/' + ${archive.id}}" class="btn btn-primary"><i
                             class="fas fa-angle-double-right"></i> Lire&rarr;</a>
                 </div>
-                <div class="card-footer text-muted"
+                <div class="card-footer text-muted shadow-sm rounded"
                      th:text="${#dates.format(archive.publishDate, 'yyyy-MM-dd HH:mm:ss')}">
                 </div>
             </div>
@@ -83,13 +83,12 @@
         </div>
 
         <!-- Sidebar Widgets Column -->
-        <div class="col-md-4" th:insert="~{layouts/sidebar :: sidebar}">
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4" th:insert="~{layouts/sidebar :: sidebar}">
 
         </div>
 
     </div>
     <!-- /.row -->
-
 
 </div>
 

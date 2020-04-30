@@ -1,28 +1,30 @@
-package org.digital.archive.services;
+package org.digital.archive.services.impl;
 
-import org.digital.archive.entities.Student;
 import org.digital.archive.entities.User;
 import org.digital.archive.repositories.UserRepository;
+import org.digital.archive.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User saveUser(User user) {
@@ -32,10 +34,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
-        if (optionalUser.isPresent()) {
-            return optionalUser.get();
-        }
-        return null;
+        return optionalUser.orElse(null);
     }
 
     @Override

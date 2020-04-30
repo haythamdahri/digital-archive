@@ -25,7 +25,7 @@
     <div class="row">
 
         <!-- Users Entries Column -->
-        <div class="col-md-8">
+        <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
 
             <h1 class="my-4 text-center" th:text="${title}"></h1>
 
@@ -34,16 +34,17 @@
 
                 <div class="col-sm-12 col-md-6 col-lg-4 col-xl-6 mb-5 mr-auto ml-auto"  th:each="user : ${users.content}">
                     <div class="card-deck">
-                        <div class="card">
+                        <div class="card shadow rounded">
                             <a th:data-fancybox="'/uploads/users/images/' + ${user.picture}"
                                th:href="'/uploads/users/images/' + ${user.picture}">
                                 <img th:src="@{'/uploads/users/images/' + ${user.picture}}" class="card-img-top"
                                      th:alt="${user.fullName}">
                             </a>
                             <div class="card-body">
-                                <h5 class="card-title" th:text="${user.fullName}"></h5>
-                                <p class="card-text" th:text="${user.about}" />
-                                <a th:href="@{'/users/' + ${user.id}}" class="btn btn-primary btn-lg btn-block btn-sm"><i class="fas fa-address-card"></i> Profil</a>
+                                <h5 class="card-title font-weight-bold" th:text="${user.fullName}"></h5>
+                                <small class="text-muted"><p class="card-text" th:text="${user.about}" /></small>
+                                <hr class="shadow-sm rounded bg-dark" />
+                                <a th:href="@{'/users/' + ${user.id}}" class="btn btn-primary btn-lg btn-block btn-sm shadow-sm rounded mt-2 font-weight-bold"><i class="fas fa-address-card"></i> Profil</a>
                             </div>
                         </div>
                     </div>
@@ -60,19 +61,19 @@
 
             <nav aria-label="Page navigation" th:if="${users.totalPages > 1}">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item" th:if="${users.hasPrevious()}">
+                    <li class="page-item shadow rounded font-weight-bold" th:if="${users.hasPrevious()}">
                         <a class="page-link"
                            th:href="@{/users(page=${users.number - 1}, type=${type != null ? type : ''}, user-search=${user_search != null ? user_search : ''})}">&larr;Precédent</a>
                     </li>
-                    <li class="page-item disabled" th:if="${!users.hasPrevious()}">
+                    <li class="page-item disabled shadow rounded font-weight-bold" th:if="${!users.hasPrevious()}">
                         <a class="page-link" href="#">&larr;Precédent</a>
                     </li>
 
-                    <li class="page-item" th:if="${users.hasNext()}">
+                    <li class="page-item shadow rounded font-weight-bold" th:if="${users.hasNext()}">
                         <a class="page-link"
                            th:href="@{/users/(page=${users.number + 1}, type=${type != null ? type : ''}, user-search=${user_search != null ? user_search : ''})}">Suivant&rarr;</a>
                     </li>
-                    <li class="page-item disabled" th:if="${!users.hasNext()}">
+                    <li class="page-item disabled shadow rounded font-weight-bold" th:if="${!users.hasNext()}">
                         <a class="page-link" href="#">Suivant&rarr;</a>
                     </li>
                 </ul>
@@ -81,7 +82,7 @@
         </div>
 
         <!-- Sidebar Widgets Column -->
-        <div class="col-md-4" th:insert="~{layouts/sidebar :: sidebar}">
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4" th:insert="~{layouts/sidebar :: sidebar}">
 
         </div>
 

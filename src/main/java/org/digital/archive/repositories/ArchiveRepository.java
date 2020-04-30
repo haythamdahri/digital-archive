@@ -9,15 +9,18 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Repository;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Repository
-@RepositoryRestResource(path = "/api/archives")
+@RepositoryRestResource(path = "archives")
 public interface ArchiveRepository extends PagingAndSortingRepository<Archive, Long> {
 
-    public Page<Archive> findByTitleContainingIgnoreCase(@Param("title") String title, @PageableDefault Pageable pageable);
+    Page<Archive> findByTitleContainingIgnoreCase(@Param("title") String title, @PageableDefault Pageable pageable);
 
-    public Page<Archive> findByPublisherIdAndTitleContainingIgnoreCase(@Param("id") Long publisherId, @Param("title") String title, @PageableDefault Pageable pageable);
+    Page<Archive> findByPublisherIdAndTitleContainingIgnoreCase(@Param("id") Long publisherId, @Param("title") String title, @PageableDefault Pageable pageable);
 
-    public Page<Archive> findByPublisherId(@Param("id") Long publisherId, @PageableDefault Pageable pageable);
+    Page<Archive> findByPublisherId(@Param("id") Long publisherId, @PageableDefault Pageable pageable);
 
 
 }

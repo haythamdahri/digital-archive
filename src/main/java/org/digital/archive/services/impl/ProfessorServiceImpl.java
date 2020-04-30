@@ -1,11 +1,8 @@
-package org.digital.archive.services;
+package org.digital.archive.services.impl;
 
-import org.digital.archive.entities.Archive;
 import org.digital.archive.entities.Professor;
-import org.digital.archive.entities.Role;
-import org.digital.archive.entities.Student;
 import org.digital.archive.repositories.ProfessorRepository;
-import org.digital.archive.repositories.RoleRepository;
+import org.digital.archive.services.ProfessorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,11 +13,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Service
 public class ProfessorServiceImpl implements ProfessorService {
 
-    @Autowired
     private ProfessorRepository professorRepository;
+
+    @Autowired
+    public void setProfessorRepository(ProfessorRepository professorRepository) {
+        this.professorRepository = professorRepository;
+    }
 
     @Override
     public Professor saveProfessor(Professor professor) {
@@ -30,10 +34,7 @@ public class ProfessorServiceImpl implements ProfessorService {
     @Override
     public Professor getProfessor(Long id) {
         Optional<Professor> professorOptional = this.professorRepository.findById(id);
-        if( professorOptional.isPresent() ) {
-            return professorOptional.get();
-        }
-        return null;
+        return professorOptional.orElse(null);
     }
 
     @Override

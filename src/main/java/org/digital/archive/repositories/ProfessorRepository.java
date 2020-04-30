@@ -11,14 +11,17 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Repository
-@RepositoryRestResource(path = "/api/professors")
+@RepositoryRestResource(path = "professors")
 public interface ProfessorRepository extends PagingAndSortingRepository<Professor, Long> {
 
-    public Professor findByEmail(@Param("email") String email);
+    Professor findByEmail(@Param("email") String email);
 
-    public Collection<Professor> findByUsername(@Param("username") String username);
+    Collection<Professor> findByUsername(@Param("username") String username);
 
-    public Page<Professor> findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(@Param("username") String username, @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("email") String email, @PageableDefault Pageable pageable);
+    Page<Professor> findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(@Param("username") String username, @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("email") String email, @PageableDefault Pageable pageable);
 
 }

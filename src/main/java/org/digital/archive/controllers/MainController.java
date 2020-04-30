@@ -20,47 +20,75 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.*;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Controller
 @RequestMapping("/")
 public class MainController {
 
-    @Autowired
+    private static final int SIZE = 10;
     private SecurityHelper securityHelper;
-
-    @Autowired
     private ArchiveHelper archiveHelper;
-
-    @Autowired
     private StudentService studentService;
-
-    @Autowired
     private ProfessorService professorService;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
     private ArchiveService archiveService;
-
-    @Autowired
     private Map<RoleType, String> rolesMap;
 
-    @Value("${file.upload-dir}")
-    private String path;
+    @Autowired
+    public void setSecurityHelper(SecurityHelper securityHelper) {
+        this.securityHelper = securityHelper;
+    }
 
-    private final int size = 10;
+    @Autowired
+    public void setArchiveHelper(ArchiveHelper archiveHelper) {
+        this.archiveHelper = archiveHelper;
+    }
 
-    /*
-     * Home page controller (GET REQUESTS)
+    @Autowired
+    public void setStudentService(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+    @Autowired
+    public void setProfessorService(ProfessorService professorService) {
+        this.professorService = professorService;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setArchiveService(ArchiveService archiveService) {
+        this.archiveService = archiveService;
+    }
+
+    @Autowired
+    public void setRolesMap(Map<RoleType, String> rolesMap) {
+        this.rolesMap = rolesMap;
+    }
+
+    /**
+     * Home Page
+     *
+     * @param professorId: Professor Identifier
+     * @param page:        Page
+     * @param search:      Search String
+     * @return View
      */
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(path = "/")
     public ModelAndView home(@RequestParam(name = "professor", required = false) Long professorId, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(value = "archive-search", required = false) String search) {
         ModelAndView modelAndView = new ModelAndView("index");
 
@@ -71,15 +99,15 @@ public class MainController {
 
         if (search != null) {
             if (professorId == null) {
-                modelAndView.addObject("archives", this.archiveService.getArchives(search, page, size));
+                modelAndView.addObject("archives", this.archiveService.getArchives(search, page, SIZE));
             } else {
-                modelAndView.addObject("archives", this.archiveService.getArchives(professorId, search, page, size));
+                modelAndView.addObject("archives", this.archiveService.getArchives(professorId, search, page, SIZE));
             }
         } else {
             if (professorId == null) {
-                modelAndView.addObject("archives", this.archiveService.getArchives(page, size));
+                modelAndView.addObject("archives", this.archiveService.getArchives(page, SIZE));
             } else {
-                modelAndView.addObject("archives", this.archiveService.getArchives(professorId, page, size));
+                modelAndView.addObject("archives", this.archiveService.getArchives(professorId, page, SIZE));
             }
         }
 
@@ -87,10 +115,13 @@ public class MainController {
         return modelAndView;
     }
 
-    /*
-     * Login page controller (GET REQUESTS)
+    /**
+     * Login Page
+     *
+     * @param redirectAttributes: Redirect Attributes
+     * @return View
      */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @GetMapping(path = "/login")
     public String loginGet(RedirectAttributes redirectAttributes) {
         if (this.securityHelper.getConnectedUser() == null) {
             return "login";
@@ -101,11 +132,27 @@ public class MainController {
         return "redirect:/";
     }
 
-    /*
-     * Profile page controller (GET REQUESTS)
+    /**
+     * Logout user
+     * @param request: HttpServletRequest
+     * @return View
+     * @throws ServletException: thrown exception
      */
-    @RequestMapping(value = "/profile", method = RequestMethod.GET)
-    public String profileGet(@RequestParam(name = "page", defaultValue = "0") int page, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping(path = "/logout")
+    public String logout(HttpServletRequest request) throws ServletException {
+       request.logout();
+       return "redirect:/login";
+    }
+
+    /**
+     * Get Authenticated User Profile
+     *
+     * @param page:  Page
+     * @param model: Model
+     * @return View
+     */
+    @GetMapping(path = "/profile")
+    public String profileGet(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
         User user = this.securityHelper.getConnectedUser();
 
         // Retrieve the specialized classes from the parent one
@@ -117,20 +164,27 @@ public class MainController {
         model.addAttribute("userModal", user);
         model.addAttribute("professor", professor);
         model.addAttribute("student", student);
-        model.addAttribute("archivesCounter", this.archiveService.getArchives().stream().filter(archive -> archive.getPublisher().getId() == user.getId()).count());
-        model.addAttribute("archives", this.archiveService.getArchives(user.getId(), page, this.size));
+        model.addAttribute("archivesCounter", this.archiveService.getArchives().stream().filter(archive -> archive.getPublisher().getId().equals(user.getId())).count());
+        model.addAttribute("archives", this.archiveService.getArchives(user.getId(), page, SIZE));
         model.addAttribute("roles", this.rolesMap);
         return "profile";
     }
 
-    /*
-     * Profile page controller (POST REQUESTS)
+    /**
+     * Save Profile
+     *
+     * @param user:               User modal
+     * @param bindingResult:      Binding Result Attribute to check form validity
+     * @param page:               Page
+     * @param model:              Model
+     * @param redirectAttributes: Redirect Attributes
+     * @return View
      */
-    @RequestMapping(value = "/profile", method = RequestMethod.POST)
+    @PostMapping(path = "/profile")
     public String postProfile(@Valid @ModelAttribute("userModal") User user, BindingResult bindingResult, @RequestParam(name = "page", defaultValue = "0") int page, Model model, RedirectAttributes redirectAttributes) {
 
         // Adding archives to the model
-        model.addAttribute("archives", this.archiveService.getArchives(page, this.size));
+        model.addAttribute("archives", this.archiveService.getArchives(page, SIZE));
 
         // Retrieve the specialized classes from the parent one
         Professor professor = this.professorService.getProfessor(user.getId());
@@ -153,13 +207,12 @@ public class MainController {
         String username = user.getUsername();
         Long id = user.getId();
         if (!user.getUsername().equalsIgnoreCase(originalUser.getUsername())
-                && tempUserByUsername != null && tempUserByUsername.getUsername().equalsIgnoreCase(username) && tempUserByUsername.getId() != id) {
+                && tempUserByUsername != null && tempUserByUsername.getUsername().equalsIgnoreCase(username) && !tempUserByUsername.getId().equals(id)) {
             ObjectError error = new ObjectError("username", "Nom d'utilisateur est déja utilisé");
             bindingResult.addError(error);
             bindingResult.rejectValue("username", "username", "Nom d'utilisateur est déja utilisé");
-            System.out.println("Invalid username");
         }
-        if (tempUserByEmail != null && !user.getEmail().equalsIgnoreCase(originalUser.getEmail()) && tempUserByEmail.getId() != user.getId() && tempUserByEmail.getEmail().equalsIgnoreCase(user.getEmail())) {
+        if (tempUserByEmail != null && !user.getEmail().equalsIgnoreCase(originalUser.getEmail()) && !tempUserByEmail.getId().equals(user.getId()) && tempUserByEmail.getEmail().equalsIgnoreCase(user.getEmail())) {
             ObjectError error = new ObjectError("email", "Adresse email est déja utilisée");
             bindingResult.addError(error);
             bindingResult.rejectValue("email", "email", "Adresse email est déja utilisée");
@@ -213,19 +266,25 @@ public class MainController {
         return "redirect:/profile?tab=profile";
     }
 
-    /*
-     * @Access denied page
+    /**
+     * Access Denied Page
+     *
+     * @return View
      */
-    @RequestMapping(value = "/access-denied")
+    @GetMapping(path = "/access-denied")
     public String accessDenied() {
         return "access-denied";
     }
 
-    /*
-     * @Profile picture update controller (POST REQUESTS)
+    /**
+     * Update Profile Image
+     *
+     * @param file:               Image file
+     * @param redirectAttributes: Redirect Attributes
+     * @return View
      */
-    @PostMapping("/profile/update-picture")
-    public String updateProfilepicture(@RequestParam("picture") MultipartFile file, Model model, RedirectAttributes redirectAttributes) {
+    @PostMapping(path = "/profile/update-picture")
+    public String updateProfilePicture(@RequestParam("picture") MultipartFile file, RedirectAttributes redirectAttributes) {
         try {
 
             // Check picture file validity before processing
@@ -245,16 +304,13 @@ public class MainController {
 
             // Upload user image or update it if exists
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(SecurityConstants.usersPicturesUploadDirectory + user.getPicture());
-            System.out.println(Files.exists(path));
-            Files.write(path, bytes);
+            Files.write(Paths.get(SecurityConstants.usersPicturesUploadDirectory + user.getPicture()), bytes);
 
             // Redirect the user to his profile with a success message
             redirectAttributes.addFlashAttribute("success", "L'image de votre profil à été changée avec succés");
             return "redirect:/profile";
 
         } catch (Exception ex) {
-            ex.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Une erreure est survenue, veuillez ressayer!");
             return "redirect:/profile";
         }
@@ -262,20 +318,25 @@ public class MainController {
 
     /*
      * @Archive controller (GET REQUESTS)
-     * Page protected only for professors, administrators and moderators
+     *
+     */
+
+    /**
+     * Get Profile
+     *
+     * @param model: Model
+     * @return View
      */
     @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
-    @RequestMapping(value = "/archives/save", method = RequestMethod.GET)
-    public String profileGet(Model model) {
+    @GetMapping(path = "/archives/save")
+    public String getArchiveForm(Model model) {
 
         // Retrieve connected
-        User user = this.securityHelper.getConnectedUser();
-
         // Retrieve professors and students
         Collection<Professor> professors = this.professorService.getProfessors();
         Collection<Student> students = this.studentService.getStudents();
 
-        model.addAttribute("user", user);
+        model.addAttribute("user", this.securityHelper.getConnectedUser());
         model.addAttribute("professors", professors);
         model.addAttribute("students", students);
         Archive archive = new Archive();
@@ -285,13 +346,26 @@ public class MainController {
 
     }
 
-    /*
-     * @Archive controller (POST REQUESTS)
-     * Page protected only for professors, administrators and moderators
+    /**
+     * Save Archive
+     * Professors are only authroized to access this page
+     *
+     * @param id:                 Archive Id
+     * @param title:              Archive Title
+     * @param content:            Archive Content
+     * @param professors:         Archive Professors
+     * @param students:           Archive Students
+     * @param image:              Archive Image
+     * @param file:               Archive File
+     * @param confirmImageEdit:   Archive Confirm Image Edit
+     * @param confirmFileEdit:    Archive File Edit Confirmation
+     * @param model:              Model
+     * @param redirectAttributes: Redirect Attributes
+     * @return View
      */
     @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
-    @RequestMapping(value = "/archives/save", method = RequestMethod.POST)
-    public String profilePost(@RequestParam(value = "id", required = false) Long id, @RequestParam(value = "title", defaultValue = "empty") String title, @RequestParam(value = "content", defaultValue = "empty") String content,
+    @PostMapping(path = "/archives/save")
+    public String saveArchive(@RequestParam(value = "id", required = false) Long id, @RequestParam(value = "title", defaultValue = "empty") String title, @RequestParam(value = "content", defaultValue = "empty") String content,
                               @RequestParam(value = "professors", defaultValue = "empty") String[] professors, @RequestParam(value = "students", defaultValue = "empty") String[] students,
                               @RequestParam(value = "image", defaultValue = "empty") MultipartFile image, @RequestParam(value = "file", defaultValue = "empty") MultipartFile file,
                               @RequestParam(value = "confirm-image-edit", required = false) String confirmImageEdit,
@@ -301,7 +375,7 @@ public class MainController {
         // Retrieve connected user
         User user = this.securityHelper.getConnectedUser();
 
-        Archive archive = null;
+        Archive archive;
 
         if (id == null) {
             // Create the archive
@@ -346,8 +420,6 @@ public class MainController {
                     archive.addStudent(this.studentService.getStudent(Long.parseLong(studentId)));
                 }
 
-                System.out.println(archive.getId() == null || (confirmImageEdit != null && !image.isEmpty()));
-
                 // Check image and file validity before proceeding
                 if (archive.getId() == null && image.isEmpty()) {
                     throw new Exception();
@@ -372,7 +444,7 @@ public class MainController {
                 }
 
 
-                // Resave archive
+                // Re-save archive
                 this.archiveService.saveArchive(archive);
 
                 // Redirect user with successfull message
@@ -382,10 +454,6 @@ public class MainController {
                 throw new Exception();
             }
         } catch (Exception exception) {
-
-
-            System.out.println(exception.getMessage());
-
             // Retrieve professors and students
             Collection<Professor> professorCollection = this.professorService.getProfessors();
             Collection<Student> studentCollection = this.studentService.getStudents();
@@ -395,16 +463,8 @@ public class MainController {
             model.addAttribute("students", studentCollection);
             model.addAttribute("archive", archive);
 
-            Collection<String> profes = new ArrayList<>();
-            Collection<String> stds = new ArrayList<>();
-
-            for (String professorId : professors) {
-                profes.add(professorId);
-            }
-
-            for (String studentId : students) {
-                stds.add(studentId);
-            }
+            Collection<String> stds = new ArrayList<>(Arrays.asList(students));
+            Collection<String> profes = new ArrayList<>(Arrays.asList(professors));
 
             model.addAttribute("selectedProfessors", profes);
             model.addAttribute("selectedStudents", stds);
@@ -418,8 +478,17 @@ public class MainController {
     /*
      * Single Archive
      */
-    @RequestMapping(value = "/archives/{id}", method = RequestMethod.GET)
-    public String archiveGet(@PathVariable(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
+
+    /**
+     * Retrieve an archive
+     *
+     * @param id:                 Archive Identifier
+     * @param model:              Model
+     * @param redirectAttributes: Redirect Attributes
+     * @return Views
+     */
+    @GetMapping(path = "/archives/{id}")
+    public String getArchive(@PathVariable(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
         if (id != null) {
 
             // Retrieve the archive from database
@@ -430,8 +499,8 @@ public class MainController {
                 archive.setViews(archive.getViews() != null ? archive.getViews() + 1 : 1);
                 archive = this.archiveService.saveArchive(archive);
 
-                String publishDate = SimpleDateFormat.getDateInstance(
-                        SimpleDateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
+                String publishDate = DateFormat.getDateInstance(
+                        DateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
                 model.addAttribute("archive", archive);
                 model.addAttribute("publishDate", publishDate);
                 return "archive";
@@ -445,12 +514,17 @@ public class MainController {
         }
     }
 
-    /*
-     * @Edit Archive controller (GET REQUESTS)
+    /**
+     * Edit an archive
+     *
+     * @param id:                 Archive ID
+     * @param model:              Model
+     * @param redirectAttributes: Redirect Attributes
+     * @return View
      */
     @PreAuthorize(value = "hasRole('ROLE_PROFESSOR')")
-    @RequestMapping(value = "/archives/{id}/edit", method = RequestMethod.GET)
-    public String profileGet(@PathVariable(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping(path = "/archives/{id}/edit")
+    public String startArchiveEditing(@PathVariable(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
 
         if (id != null) {
             // Retrieve the archive from database
@@ -461,35 +535,28 @@ public class MainController {
                 User user = this.securityHelper.getConnectedUser();
 
                 // Retrieve professors and students
-                Collection<Professor> professors = this.professorService.getProfessors();
-                Collection<Student> students = this.studentService.getStudents();
-
                 model.addAttribute("user", user);
-                model.addAttribute("professors", professors);
-                model.addAttribute("students", students);
+                model.addAttribute("professors", this.professorService.getProfessors());
+                model.addAttribute("students", this.studentService.getStudents());
                 model.addAttribute("archive", archive);
 
 
                 // Retrieve selected professors and students
-                Collection<String> profes = new ArrayList<>();
-                Collection<String> stds = new ArrayList<>();
+                Collection<String> professorsIds = new ArrayList<>();
+                Collection<String> studentsIds = new ArrayList<>();
 
-                for (Professor professor : archive.getProfessors()) {
-                    profes.add(professor.getId().toString());
-                }
+                archive.getProfessors().forEach(professor -> professorsIds.add(professor.getId().toString()));
 
-                for (Student student : archive.getStudents()) {
-                    stds.add(student.getId().toString());
-                }
+                archive.getStudents().forEach(student -> studentsIds.add(student.getId().toString()));
 
 
-                model.addAttribute("selectedProfessors", profes);
-                model.addAttribute("selectedStudents", stds);
+                model.addAttribute("selectedProfessors", professorsIds);
+                model.addAttribute("selectedStudents", studentsIds);
 
 
                 // Reformat date
-                String publishDate = SimpleDateFormat.getDateInstance(
-                        SimpleDateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
+                String publishDate = DateFormat.getDateInstance(
+                        DateFormat.LONG, Locale.FRANCE).format(archive.getPublishDate());
                 model.addAttribute("archive", archive);
                 model.addAttribute("publishDate", publishDate);
                 return "archive-form";
@@ -500,64 +567,72 @@ public class MainController {
 
     }
 
-    /*
-     * Single Archive
+    /**
+     * Delete a given archive
+     *
+     * @param id:                 Archive ID
+     * @param redirectAttributes: Redirect attributes
+     * @return View
      */
-    @RequestMapping(value = "/archives/delete", method = RequestMethod.POST)
-    public String deleteArchivePost(@RequestParam(name = "id", required = false) Long id, Model model, RedirectAttributes redirectAttributes) {
-        System.out.println(id);
+    @PostMapping(path = "/archives/delete")
+    public String deleteArchivePost(@RequestParam(name = "id", required = false) Long id, RedirectAttributes redirectAttributes) {
         if (id != null) {
-            System.out.println(this.archiveService.getArchive(id));
             this.archiveService.deleteArchive(id);
         }
         redirectAttributes.addFlashAttribute("success", "L'archive à été supprimé avec succés!");
         return "redirect:/profile";
     }
 
-    /*
-     * Users controllers(GET request)
+    /**
+     * Users Get Endpoint
+     *
+     * @param userType: User type: Professor Or Student
+     * @param search:   User Search
+     * @param page:     Page
+     * @param type:     Type
+     * @param model:    Model
+     * @return View
      */
-    @RequestMapping(value = "/users", method = RequestMethod.GET)
-    public String usersGet(@RequestParam(name = "type", required = false) String userType, @RequestParam(value = "user-search", required = false) String search, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "type", required = false) String type, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping(path = "/users")
+    public String usersGet(@RequestParam(name = "type", required = false) String userType, @RequestParam(value = "user-search", required = false) String search, @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "type", required = false) String type, Model model) {
         if (userType != null && search != null) {
             if (type != null && type.equalsIgnoreCase("professors")) {
-                model.addAttribute("users", this.professorService.getProfessors(search, page, this.size));
+                model.addAttribute("users", this.professorService.getProfessors(search, page, SIZE));
                 model.addAttribute("user_search", search);
                 model.addAttribute("type", "professors");
                 model.addAttribute("title", "Liste Des Professeurs");
             } else {
-                model.addAttribute("users", this.studentService.getStudents(search, page, this.size));
+                model.addAttribute("users", this.studentService.getStudents(search, page, SIZE));
                 model.addAttribute("title", "Liste Des Étudiants");
                 model.addAttribute("user_search", search);
                 model.addAttribute("type", "students");
             }
         } else {
             if (type != null && type.equalsIgnoreCase("professors")) {
-                model.addAttribute("users", this.professorService.getProfessors(page, this.size));
+                model.addAttribute("users", this.professorService.getProfessors(page, SIZE));
                 model.addAttribute("title", "Liste Des Professeurs");
                 model.addAttribute("type", "professors");
             } else {
-                model.addAttribute("users", this.studentService.getStudents(page, this.size));
+                model.addAttribute("users", this.studentService.getStudents(page, SIZE));
                 model.addAttribute("title", "Liste Des Étudiants");
                 model.addAttribute("type", "students");
             }
         }
-
-
+        // Return users view
         return "users";
     }
 
     /*
      * User controllers(GET request)
      */
-    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET)
-    public String userGet(@PathVariable(name = "id", required = true) Long id, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping(path = "/users/{id}")
+    public String userGet(@PathVariable(name = "id") Long id, Model model) {
 
         // Retrieve connected user
         User connectedUser = this.securityHelper.getConnectedUser();
 
         // Redirect user to his profile if the same profile
-        if (connectedUser.getId() == id) {
+        if (connectedUser.getId().equals(id)) {
             return "redirect:/profile";
         }
 
@@ -569,7 +644,7 @@ public class MainController {
         // Put data in the model
         model.addAttribute("otherUser", user);
         model.addAttribute("professor", professor);
-        model.addAttribute("archivesCounter", this.archiveService.getArchives().stream().filter(archive -> archive.getPublisher().getId() == user.getId()).count());
+        model.addAttribute("archivesCounter", this.archiveService.getArchives().stream().filter(archive -> archive.getPublisher().getId().equals(user.getId())).count());
         model.addAttribute("student", student);
         model.addAttribute("roles", this.rolesMap);
 

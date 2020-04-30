@@ -13,35 +13,48 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Configuration
 @EnableAutoConfiguration
 @ControllerAdvice
 public class GlobalConfiguration {
 
-    @Autowired
     private SecurityHelper securityHelper;
-
-    @Autowired
     private ArchiveService archiveService;
 
-    /*
-     * Bcrypt password encoder instance
+    @Autowired
+    public void setSecurityHelper(SecurityHelper securityHelper) {
+        this.securityHelper = securityHelper;
+    }
+
+    @Autowired
+    public void setArchiveService(ArchiveService archiveService) {
+        this.archiveService = archiveService;
+    }
+
+    /**
+     * BCrypt Password Encoder Bean
+     * @return BCryptPasswordEncoder
      */
     @Bean
     public BCryptPasswordEncoder getBCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /*
+    /**
      * User model attribute
+     * @return User
      */
     @ModelAttribute("user")
     public User sendConnectedUser() {
         return this.securityHelper.getConnectedUser();
     }
 
-    /*
+    /**
      * Trending Archives
+     * @return Page<Archive>
      */
     @ModelAttribute("trendingArchives")
     public Page<Archive> sendTrendingArchives() {

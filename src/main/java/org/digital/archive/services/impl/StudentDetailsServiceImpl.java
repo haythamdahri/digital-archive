@@ -1,57 +1,53 @@
-package org.digital.archive.services;
+package org.digital.archive.services.impl;
 
 import org.digital.archive.entities.User;
+import org.digital.archive.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-/*
-* Define users login mechanism
-*/
 
+/**
+ * @author Haytham DAHRI
+ */
 @Service
-public class StudentDetailsServiceImpl implements UserDetailsService{
+public class StudentDetailsServiceImpl implements UserDetailsService {
 
-    @Autowired
     private UserService userService;
 
     @Autowired
-    private RoleService roleService;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    /*
-     * @Following method will be invoced by Spring Security to filter the user
-     * to verify the credientials using basic authentication with email and password or with JWT
+    /**
+     * Following method will be invoced by Spring Security to filter the user
+     * Verify credentials using basic authentication with email and password or JWT
+     *
+     * @param email: User Email
+     * @return UserDetails
+     * @throws UsernameNotFoundException: throw exception in case of unsuccessful attempt
      */
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // Retrieve security user from database using security user service instance
         // We are using email instead of username because we based our authentication on email
         User user = this.userService.getUser(email);
-        if( user == null ) {
+        if (user == null) {
             throw new UsernameNotFoundException("Authentication failed");
         }
         // In case the user exists, we need to create a collection of type GrantedAuthorities
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        user.getRoles().forEach(role -> {
-            authorities.add(new SimpleGrantedAuthority(role.getRole().name()));
-        });
+        user.getRoles().forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRole().name())));
         // After constructing the list of authorities, we will return an instance
         // of spring security user giving it username, password and authorities
-        System.out.println("User password => " + user.getPassword());
-        System.out.println(this.bCryptPasswordEncoder.matches("toortoor", user.getPassword()));
-
-
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), authorities);
     }
 

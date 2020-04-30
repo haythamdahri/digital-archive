@@ -1,18 +1,26 @@
-package org.digital.archive.services;
+package org.digital.archive.services.impl;
 
 import org.digital.archive.entities.Role;
 import org.digital.archive.repositories.RoleRepository;
+import org.digital.archive.services.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    public void setRoleRepository(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     @Override
     public Role saveRole(Role role) {
@@ -22,10 +30,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getRole(Long id) {
         Optional<Role> roleOptional = this.roleRepository.findById(id);
-        if( roleOptional.isPresent() ) {
-            return roleOptional.get();
-        }
-        return null;
+        return roleOptional.orElse(null);
     }
 
     @Override

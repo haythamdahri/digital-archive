@@ -9,13 +9,16 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Repository;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Repository
-@RepositoryRestResource(path = "/api/users")
+@RepositoryRestResource(path = "users")
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 
-    public User findByEmail(@Param("email") String email);
+    User findByEmail(@Param("email") String email);
 
-    public User findByUsername(@Param("username") String username);
+    User findByUsername(@Param("username") String username);
 
-    public Page<User> findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(@Param("username") String username, @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("email") String email, @PageableDefault Pageable pageable);
+    Page<User> findByUsernameContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrEmailContainingIgnoreCase(@Param("username") String username, @Param("firstName") String firstName, @Param("lastName") String lastName, @Param("email") String email, @PageableDefault Pageable pageable);
 }

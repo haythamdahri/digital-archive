@@ -1,6 +1,9 @@
 package org.digital.archive.entities;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -11,6 +14,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Entity
 @Table(name = "archives")
 @Setter

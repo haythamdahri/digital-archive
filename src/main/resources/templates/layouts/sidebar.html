@@ -3,15 +3,15 @@
 
 <th:block th:fragment="sidebar">
     <!-- Search Widget -->
-    <div class="card my-4">
+    <div class="card my-4  shadow rounded">
         <h5 class="card-header">Recherche</h5>
         <div class="card-body">
             <form method="GET" th:action="@{/}">
                 <div class="input-group">
-                    <input th:value="${search != null ? search : ''}" type="text" name="archive-search"
-                           class="form-control" placeholder="Chercher un archive...">
+                    <input th:value="${search != null ? search : ''}" type="search" name="archive-search"
+                           class="form-control shadow-sm rounded" placeholder="Chercher un archive...">
                     <span class="input-group-btn">
-                <button class="btn btn-secondary" type="submit"><i class="fab fa-searchengin"></i> Chercher!</button>
+                <button class="btn btn-secondary  shadow-sm rounded" type="submit"><i class="fab fa-searchengin"></i> Chercher!</button>
               </span>
                 </div>
             </form>
@@ -20,7 +20,7 @@
 
 
     <!-- Side Widget -->
-    <div class="card my-4">
+    <div class="card my-4  shadow rounded">
         <h5 class="card-header">Les plus visités</h5>
         <div class="list-group">
             <th:block th:each="archive : ${trendingArchives.content}">

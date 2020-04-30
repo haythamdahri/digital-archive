@@ -1,18 +1,20 @@
 package org.digital.archive.services;
 
-
 import org.digital.archive.entities.Role;
 
 import java.util.Collection;
 
+/**
+ * @author Haytham DAHRI
+ */
 public interface RoleService {
 
-    public Role saveRole(Role role);
+    Role saveRole(Role role);
 
-    public Role getRole(Long id);
+    Role getRole(Long id);
 
-    public boolean deleteRole(Long id);
+    boolean deleteRole(Long id);
 
-    public Collection<Role> getRoles();
+    Collection<Role> getRoles();
 
 }

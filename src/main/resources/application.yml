@@ -1,0 +1,38 @@
+## Spring datasource configuration
+spring:
+  ## Active Profile
+  profiles:
+    active: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/archive?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: postgres
+    password: toortoor
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    show-sql: false
+  ## Application name
+  application:
+    name: archives-manager
+  ## Servlet Config
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 500MB
+      max-request-size: 500MB
+  ## Data Configuration
+  data:
+    rest:
+      base-path: /api
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        web: DEBUG
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<!-- @head include section -->
+<head th:include="layouts/header :: head">
+
+    <!-- @Title part -->
+    <title id="pageTitle">Erreur</title>
+
+</head>
+<!-- @Body section -->
+<body>
+
+<!-- @Navbar section -->
+<th:block th:replace="~{/layouts/navbar :: navbar}"/>
+
+<!-- @Container section -->
+<div class="container">
+
+    <div class="row">
+
+        <!-- Blog Entries Column -->
+        <div class="col-md-8 mt-4">
+
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation"></i> 404 Aucune page n'a été trouvée! <a th:href="@{/}">Acceuil</a>
+            </div>
+
+        </div>
+
+        <!-- Sidebar Widgets Column -->
+        <!-- Sidebar Widgets Column -->
+        <div class="col-md-4" th:insert="~{/layouts/sidebar :: sidebar}">
+
+        </div>
+
+    </div>
+    <!-- /.row -->
+
+
+</div>
+
+
+<!-- @Footer include section -->
+<th:block th:replace="~{layouts/footer :: footer}"/>
+
+<!-- @Javascript include section -->
+<div th:replace="~{layouts/js :: javascript}"></div>
+
+</body>
+</html>

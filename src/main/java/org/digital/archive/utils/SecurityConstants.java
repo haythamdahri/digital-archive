@@ -3,12 +3,11 @@ package org.digital.archive.utils;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @author Haytham DAHRI
+ */
 public class SecurityConstants {
 
-
-    /*
-     * Useful properties
-     */
     public static final String uploadDirectory = System.getProperty("user.dir") + "/uploads/";
     public static final String usersUploadDirectory = System.getProperty("user.dir") + "/uploads/users/";
     public static final String usersPicturesUploadDirectory = System.getProperty("user.dir") + "/uploads/users/images/";

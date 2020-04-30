@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Entity
 @Table(name = "roles")
 @Data
@@ -17,7 +20,7 @@ import java.util.List;
 public class Role implements Serializable {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name= "id")
+    @Column(name = "id")
     private Long id;
 
     // Role identifier
@@ -33,16 +36,19 @@ public class Role implements Serializable {
     @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
     private List<User> users;
 
-    /*
-    * Custom class constructor
-    */
+    /**
+     * Custom class constructor
+     * @param role: RoleType
+     * @param description: String
+     */
     public Role(RoleType role, String description) {
         this.role = role;
         this.description = description;
     }
 
-    /*
+    /**
      * Convenient method to add new user to the current role users list
+     * @param user: User
      */
     public void addUser(User user) {
         if (this.users == null) {

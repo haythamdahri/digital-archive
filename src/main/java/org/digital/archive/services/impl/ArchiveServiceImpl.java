@@ -1,7 +1,8 @@
-package org.digital.archive.services;
+package org.digital.archive.services.impl;
 
 import org.digital.archive.entities.Archive;
 import org.digital.archive.repositories.ArchiveRepository;
+import org.digital.archive.services.ArchiveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,11 +13,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Service
 public class ArchiveServiceImpl implements ArchiveService {
 
-    @Autowired
     private ArchiveRepository archiveRepository;
+
+    @Autowired
+    public void setArchiveRepository(ArchiveRepository archiveRepository) {
+        this.archiveRepository = archiveRepository;
+    }
 
     @Override
     public Archive saveArchive(Archive archive) {
@@ -26,10 +34,7 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Override
     public Archive getArchive(Long id) {
         Optional<Archive> archiveOptional = this.archiveRepository.findById(id);
-        if (archiveOptional.isPresent()) {
-            return archiveOptional.get();
-        }
-        return null;
+        return archiveOptional.orElse(null);
     }
 
     @Override

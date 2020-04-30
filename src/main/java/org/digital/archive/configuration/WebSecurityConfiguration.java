@@ -1,7 +1,7 @@
 package org.digital.archive.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,45 +13,55 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.sql.DataSource;
-
+/**
+ * @author Haytham DAHRI
+ */
 @Configuration
 @EnableWebSecurity
-/*
- * @EnableGlobalMethodSecurity(securedEnabled = true) is used to protect any method with @Secured which we add to specify authorized users based on there roles
- */
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
-// Order(1) means the main authentication is this,
-// Order(2) will not handle anything because the traffic will be hold here and never rich the second one.
 @Order(1)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private UserDetailsService userDetailsService;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    public void setUserDetailsService(@Qualifier("studentDetailsServiceImpl") UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
-    /*
-     * Setup user authentication
+    @Autowired
+    public void setPasswordEncoder(BCryptPasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    /**
+     * User data source authentication
+     *
+     * @param auth: AuthenticationManagerBuilder
+     * @throws Exception: throw exception in case of error
      */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userDetailsService).passwordEncoder(this.bCryptPasswordEncoder);
+        auth.userDetailsService(this.userDetailsService).passwordEncoder(this.passwordEncoder);
     }
 
-    /*
+    /**
      * Setup resources access grant
+     *
+     * @param web: WebSecurity
      */
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers("/error", "/css/**", "/js/**", "/images/**", "/less/**", "/metadata/**", "/scss/**", "/sprites/**", "/svgs/**", "/webfonts/**", "/uploads/**");
     }
 
-    /*
+    /**
      * Setup Whole access configuration
      * Setup login configuration
      * Setup exception handling
+     *
+     * @param http: HttpSecurity
      */
     @Override
     protected void configure(HttpSecurity http) throws Exception {

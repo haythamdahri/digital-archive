@@ -14,36 +14,47 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Component
 public class SecurityHelper {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private HttpSession httpSession;
 
     private static final Map<RoleType, String> roles = Stream.of(
             new AbstractMap.SimpleEntry<>(RoleType.ROLE_PROFESSOR, "Professeur"),
             new AbstractMap.SimpleEntry<>(RoleType.ROLE_STUDENT, "Étudiant"))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    private UserService userService;
+    private HttpSession httpSession;
 
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
-    /*
-     * Current connected user
+    @Autowired
+    public void setHttpSession(HttpSession httpSession) {
+        this.httpSession = httpSession;
+    }
+
+    /**
+     * Retrieve current authenticated user
+     *
+     * @return User
      */
     public User getConnectedUser() {
         SecurityContext securityContext = (SecurityContext) this.httpSession.getAttribute("SPRING_SECURITY_CONTEXT");
         if (securityContext != null) {
             String email = securityContext.getAuthentication().getName();
-            User user = this.userService.getUser(email);
-            return user;
+            return this.userService.getUser(email);
         }
         return null;
     }
 
-    /*
-     * Users roles
+    /**
+     * Roles Bean
+     * <p>
+     * return: Map<RoleType, String>
      */
     @Bean
     public Map<RoleType, String> getRoles() {

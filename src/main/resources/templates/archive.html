@@ -128,7 +128,7 @@
             <hr>
 
             <div class="col-12 text-center ml-auto mr-auto">
-                <p class="h6">Informations d'archive</p>
+                <p class="h6 text-center font-weight-bold">Informations d'archive</p>
             </div>
 
             <div class="row">
@@ -151,7 +151,7 @@
                              aria-labelledby="v-pills-home-tab">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item text-center" th:each="professor : ${archive.professors}">
-                                    <span><a th:href="@{'/users/' + ${professor.id}}"
+                                    <span><a target="_blank" th:href="@{'/users/' + ${professor.id}}"
                                              th:text="${professor.fullName}"></a></span>
                                 </li>
                             </ul>
@@ -160,7 +160,7 @@
                              aria-labelledby="v-pills-profile-tab">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item text-center" th:each="student : ${archive.students}">
-                                    <span><a th:href="@{'/users/' + ${student.id}}"
+                                    <span><a target="_blank" th:href="@{'/users/' + ${student.id}}"
                                              th:text="${student.fullName}"></a></span>
                                 </li>
                             </ul>

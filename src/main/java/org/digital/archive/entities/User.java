@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+ * @author Haytham DAHRI
+ */
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "users")
@@ -42,14 +45,14 @@ public class User implements Serializable {
     @Column(name = "first_name", updatable = true, insertable = true)
     @NotNull(message = "Prénom ne peut pas être null!")
     @NotEmpty(message = "Prénom ne peut pas être vide!")
-    @Size(min = 5, max = 255, message = "Prénom non valide, veuillez ressayer avec un autre!")
+    @Size(min = 2, max = 255, message = "Prénom non valide, veuillez ressayer avec un autre!")
     private String firstName;
 
     // Username property
     @Column(name = "last_name", updatable = true, insertable = true)
     @NotNull(message = "Nom ne peut pas être null!")
     @NotEmpty(message = "Nom ne peut pas être vide!")
-    @Size(min = 5, max = 255, message = "Nom non valide, veuillez ressayer avec un autre!")
+    @Size(min = 2, max = 255, message = "Nom non valide, veuillez ressayer avec un autre!")
     private String lastName;
 
     // Picture property
@@ -95,18 +98,13 @@ public class User implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "role_role"))
     private Collection<Role> roles;
 
-    /*
-    * User age
-    */
-    public Integer getAge() {
-        Instant instant = Instant.ofEpochMilli(this.birthDate.getTime());
-        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-        LocalDate localDate = localDateTime.toLocalDate();
-        return Period.between(localDate, LocalDate.now()).getYears();
-    }
-
-    /*
+    /**
      * Custom class constructor
+     *
+     * @param username:  user username
+     * @param email:     user email
+     * @param password:  user password
+     * @param birthDate: user birth date
      */
     public User(String username, String email, String password, Date birthDate) {
         this.username = username;
@@ -115,15 +113,28 @@ public class User implements Serializable {
         this.birthDate = birthDate;
     }
 
-    /*
+    // User age
+    public Integer getAge() {
+        Instant instant = Instant.ofEpochMilli(this.birthDate.getTime());
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        LocalDate localDate = localDateTime.toLocalDate();
+        return Period.between(localDate, LocalDate.now()).getYears();
+    }
+
+    /**
      * User full name
+     *
+     * @return String
      */
     public String getFullName() {
         return this.firstName + " " + this.lastName;
     }
 
-    /*
+
+    /**
      * Convenient method to add new role to the current user
+     *
+     * @param role: Role
      */
     public void addRole(Role role) {
         if (this.roles == null) {
@@ -131,7 +142,6 @@ public class User implements Serializable {
         }
         this.roles.add(role);
     }
-
 
 
 }
